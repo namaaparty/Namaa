@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
 
-const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
-
 export async function POST(request: Request) {
   try {
     const { userId, newUsername } = await request.json()
@@ -14,6 +12,16 @@ export async function POST(request: Request) {
     if (newUsername.length < 3) {
       return NextResponse.json({ error: "Username must be at least 3 characters" }, { status: 400 })
     }
+
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+    if (!supabaseUrl || !serviceRoleKey) {
+      console.error("[v0] Missing Supabase environment variables for edit-username route")
+      return NextResponse.json({ error: "Supabase credentials are not configured." }, { status: 500 })
+    }
+
+    const supabase = createClient(supabaseUrl, serviceRoleKey)
 
     const { data: existingUser } = await supabase.from("admins").select("id").eq("username", newUsername).maybeSingle()
 
