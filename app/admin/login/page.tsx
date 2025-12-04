@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { Suspense, useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -15,7 +15,7 @@ import Image from "next/image"
 const supabase = createClient()
 const REMEMBER_KEY = "namaa-admin-remember"
 
-export default function AdminLoginPage() {
+function AdminLoginContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [email, setEmail] = useState("")
@@ -236,6 +236,23 @@ export default function AdminLoginPage() {
         </Card>
       </div>
     </div>
+  )
+}
+
+export default function AdminLoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-muted/30 px-4">
+          <div className="flex items-center gap-3 text-muted-foreground">
+            <Loader2 className="w-5 h-5 animate-spin" />
+            <span>جاري تحميل الصفحة...</span>
+          </div>
+        </div>
+      }
+    >
+      <AdminLoginContent />
+    </Suspense>
   )
 }
 
