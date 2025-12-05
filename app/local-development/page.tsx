@@ -7,6 +7,8 @@ import { createClient as createServerSupabase } from "@/lib/supabase/server"
 import { SiteNavbar } from "@/components/site-navbar"
 import { SiteFooter } from "@/components/site-footer"
 
+export const revalidate = 60 // Cache for 60 seconds
+
 interface Section {
   id: string
   title: string

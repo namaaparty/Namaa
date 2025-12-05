@@ -2,6 +2,8 @@ import BranchesClient from "./branches-client"
 import { createClient as createServerSupabase } from "@/lib/supabase/server"
 import { getPageContent } from "@/lib/pages-storage"
 
+export const revalidate = 60 // Cache for 60 seconds
+
 interface Branch {
   id: string
   title: string
