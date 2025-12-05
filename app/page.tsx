@@ -28,5 +28,12 @@ async function fetchData() {
 export default async function Home() {
   const { heroImage, heroVideo, aboutContent, stats } = await fetchData()
 
-  return <HomeClient heroImage={heroImage} heroVideo={heroVideo} homeContent={aboutContent} statistics={stats} />
+  const safeStats = stats || {
+    total_members: 0,
+    female_members: 0,
+    male_members: 0,
+    youth_members: 0,
+  }
+
+  return <HomeClient heroImage={heroImage} heroVideo={heroVideo} homeContent={aboutContent} statistics={safeStats} />
 }
