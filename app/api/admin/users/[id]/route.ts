@@ -1,14 +1,9 @@
 import { NextResponse } from "next/server"
 import { createClient as createServiceClient } from "@supabase/supabase-js"
 
-interface RouteParams {
-  params: {
-    id: string
-  }
-}
-
-export async function DELETE(_request: Request, { params }: RouteParams) {
+export async function DELETE(_request: Request, props: { params: Promise<{ id: string }> }) {
   try {
+    const params = await props.params
     const { id } = params
 
     if (!id) {
