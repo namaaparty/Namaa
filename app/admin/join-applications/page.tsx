@@ -376,7 +376,7 @@ export default function JoinApplicationsPage() {
 
       {/* Application Details Dialog */}
       <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
-        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-7xl w-[90vw] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-2xl">تفاصيل طلب الانتساب</DialogTitle>
             <DialogDescription>
