@@ -169,9 +169,9 @@ export default function ActivityDetailPage() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-secondary/30 py-16 border-t">
+      <footer className="bg-secondary/30 py-8 border-t">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-12 mb-12">
+          <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div className="space-y-4">
               <Link href="/" className="inline-block">
                 <Image
@@ -254,7 +254,7 @@ export default function ActivityDetailPage() {
             </div>
           </div>
 
-          <div className="border-t pt-8 text-center">
+          <div className="border-t pt-4 text-center">
             <p className="text-sm text-muted-foreground">© 2025 حزب نماء. جميع الحقوق محفوظة.</p>
           </div>
         </div>

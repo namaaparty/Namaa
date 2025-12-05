@@ -126,9 +126,9 @@ export default function StatementsClient({ statements, heroImage }: StatementsCl
           )}
         </div>
 
-        <footer className="bg-secondary/30 border-t py-16">
+        <footer className="bg-secondary/30 border-t py-8">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <div className="grid md:grid-cols-4 gap-12 mb-12">
+            <div className="grid md:grid-cols-4 gap-8 mb-8">
               <div className="space-y-4">
                 <Link href="/" className="inline-block">
                   <Image
@@ -237,7 +237,7 @@ export default function StatementsClient({ statements, heroImage }: StatementsCl
               </div>
             </div>
 
-            <div className="pt-8 text-center">
+            <div className="pt-4 text-center">
               <p className="text-sm text-muted-foreground">© 2025 حزب نماء. جميع الحقوق محفوظة.</p>
             </div>
           </div>

@@ -256,9 +256,9 @@ export default function HomeClient({ heroImage, homeContent, statistics }: HomeC
           </div>
         </section>
 
-        <footer className="bg-secondary/30 border-t py-16">
+        <footer className="bg-secondary/30 border-t py-8">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <div className="grid md:grid-cols-4 gap-12 mb-12">
+            <div className="grid md:grid-cols-4 gap-8 mb-8">
               <div className="space-y-4">
                 <Link href="/" className="inline-block">
                   <Image
@@ -388,7 +388,7 @@ export default function HomeClient({ heroImage, homeContent, statistics }: HomeC
               </div>
             </div>
 
-            <div className="border-t pt-8">
+            <div className="border-t pt-4">
               <p className="text-center text-muted-foreground text-sm">
                 © {new Date().getFullYear()} حزب نماء. جميع الحقوق محفوظة.
               </p>
