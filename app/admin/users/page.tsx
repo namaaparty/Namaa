@@ -160,7 +160,7 @@ export default function UsersManagement() {
 
       toast({
         title: "تم حذف المستخدم",
-        description: targetAdmin ? `تم حذف ${targetAdmin.full_name} نهائياً.` : "تم حذف المستخدم المحدد.",
+        description: selectedAdmin ? `تم حذف ${selectedAdmin.full_name} نهائياً.` : "تم حذف المستخدم المحدد.",
         variant: "success",
       })
 
