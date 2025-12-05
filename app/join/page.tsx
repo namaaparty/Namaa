@@ -13,7 +13,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { CheckCircle2, ArrowRight, ArrowLeft } from "lucide-react"
-import { UploadIcon, CheckCircleIcon, AlertCircle, X } from "lucide-react"
+import { UploadIcon, CheckCircleIcon, AlertCircle, X, Loader2 } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import { SiteNavbar } from "@/components/site-navbar"
 import {
@@ -34,6 +34,8 @@ export default function JoinPage() {
   const [applicationNumber, setApplicationNumber] = useState<string>("")
   const [showSuccessDialog, setShowSuccessDialog] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<Record<string, boolean>>({})
+  const [nationalIdExists, setNationalIdExists] = useState(false)
+  const [checkingNationalId, setCheckingNationalId] = useState(false)
 
   const [formData, setFormData] = useState({
     // البيانات الشخصية
@@ -73,6 +75,29 @@ export default function JoinPage() {
   const { toast } = useToast()
 
   const totalSteps = 4
+
+  // Check if national ID already exists (debounced)
+  useEffect(() => {
+    if (!formData.nationalId || formData.nationalId.length !== 10) {
+      setNationalIdExists(false)
+      return
+    }
+
+    const timeoutId = setTimeout(async () => {
+      setCheckingNationalId(true)
+      try {
+        const response = await fetch(`/api/check-national-id?nationalId=${formData.nationalId}`)
+        const data = await response.json()
+        setNationalIdExists(data.exists || false)
+      } catch (error) {
+        console.error("Error checking national ID:", error)
+      } finally {
+        setCheckingNationalId(false)
+      }
+    }, 800) // Wait 800ms after user stops typing
+
+    return () => clearTimeout(timeoutId)
+  }, [formData.nationalId])
 
   const handleNext = () => {
     if (currentStep < totalSteps) {
@@ -168,6 +193,17 @@ export default function JoinPage() {
           variant: "destructive",
           title: "تنبيه",
           description: "يرجى تعبئة جميع الحقول الإلزامية المطلوبة",
+        })
+        setIsSubmitting(false)
+        return
+      }
+
+      // Check for duplicate national ID
+      if (nationalIdExists) {
+        toast({
+          variant: "destructive",
+          title: "الرقم الوطني مستخدم",
+          description: "تم تقديم طلب سابق بهذا الرقم الوطني. يرجى الانتظار حتى تتم مراجعة طلبك السابق.",
         })
         setIsSubmitting(false)
         return
@@ -390,15 +426,28 @@ export default function JoinPage() {
                           {fieldErrors.nationalId && (
                             <p className="text-xs text-red-600 bg-red-50 px-2 py-1 rounded">هذا الحقل مطلوب</p>
                           )}
+                          {nationalIdExists && (
+                            <p className="text-xs text-red-600 bg-red-50 px-2 py-1 rounded flex items-center gap-2">
+                              <AlertCircle className="w-3 h-3" />
+                              تم تقديم طلب سابق بهذا الرقم الوطني
+                            </p>
+                          )}
+                          {checkingNationalId && (
+                            <p className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded flex items-center gap-2">
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                              جاري التحقق...
+                            </p>
+                          )}
                           <Input
                             id="nationalId"
                             placeholder="أدخل الرقم الوطني (10 أرقام)"
                             maxLength={10}
                             required
-                            className={`text-right ${fieldErrors.nationalId ? "border-red-500" : ""}`}
+                            className={`text-right ${fieldErrors.nationalId || nationalIdExists ? "border-red-500" : ""}`}
                             value={formData.nationalId}
                             onChange={(e) => {
-                              setFormData({ ...formData, nationalId: e.target.value })
+                              const value = e.target.value.replace(/\D/g, "") // Only numbers
+                              setFormData({ ...formData, nationalId: value })
                               setFieldErrors({ ...fieldErrors, nationalId: false })
                             }}
                           />
