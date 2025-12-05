@@ -22,6 +22,7 @@ export default function JoinPage() {
   const [acceptedTerms, setAcceptedTerms] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle")
+  const [applicationNumber, setApplicationNumber] = useState<string>("")
 
   const [formData, setFormData] = useState({
     // البيانات الشخصية
@@ -108,13 +109,77 @@ export default function JoinPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    console.log("[join-form] Submit triggered, current step:", currentStep)
+    console.log("[join-form] Form data:", formData)
+    
     setIsSubmitting(true)
+    setSubmitStatus("idle")
 
-    // محاكاة إرسال النموذج
-    setTimeout(() => {
-      setIsSubmitting(false)
+    try {
+      // Validate required fields
+      if (!formData.nationalId || !formData.phone || !formData.fullName) {
+        console.log("[join-form] Validation failed - missing required fields")
+        toast({
+          variant: "destructive",
+          title: "تنبيه",
+          description: "يرجى تعبئة جميع الحقول الإلزامية (الرقم الوطني، الهاتف، الاسم)",
+        })
+        setIsSubmitting(false)
+        return
+      }
+      
+      console.log("[join-form] Validation passed, building FormData...")
+
+      const submitData = new FormData()
+      
+      // Add all text fields (including empty strings for optional fields)
+      Object.entries(formData).forEach(([key, value]) => {
+        if (!(value instanceof File)) {
+          submitData.append(key, value?.toString() || "")
+        }
+      })
+
+      // Add file fields
+      if (formData.idFrontFile) submitData.append("idFrontFile", formData.idFrontFile)
+      if (formData.idBackFile) submitData.append("idBackFile", formData.idBackFile)
+      if (formData.resignationFile) submitData.append("resignationFile", formData.resignationFile)
+      if (formData.clearanceFile) submitData.append("clearanceFile", formData.clearanceFile)
+      if (formData.photoFile) submitData.append("photoFile", formData.photoFile)
+
+      console.log("[join-form] Sending to API...")
+      
+      const response = await fetch("/api/join", {
+        method: "POST",
+        body: submitData,
+      })
+
+      console.log("[join-form] Response status:", response.status)
+      const result = await response.json()
+      console.log("[join-form] Response data:", result)
+
+      if (!response.ok) {
+        throw new Error(result.error || "فشل إرسال الطلب")
+      }
+
+      const appNumber = result.applicationNumber || "غير متوفر"
+      setApplicationNumber(appNumber)
       setSubmitStatus("success")
-    }, 2000)
+      toast({
+        title: "✅ تم إرسال طلبك بنجاح",
+        description: `رقم طلبك: ${appNumber}\nيرجى مراجعة بريدك الإلكتروني للحصول على تفاصيل الطلب والتحديثات.`,
+        duration: 8000,
+      })
+    } catch (error) {
+      console.error("[join] Submission error:", error)
+      setSubmitStatus("error")
+      toast({
+        variant: "destructive",
+        title: "خطأ",
+        description: error instanceof Error ? error.message : "حدث خطأ أثناء إرسال الطلب",
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -258,13 +323,14 @@ export default function JoinPage() {
                         </p>
                       </div>
 
-                      <div className="flex items-center gap-3 p-4 bg-muted rounded-lg">
+                      <div className="flex items-start gap-3 p-4 bg-muted rounded-lg">
                         <Checkbox
                           id="terms"
                           checked={acceptedTerms}
                           onCheckedChange={(checked) => setAcceptedTerms(checked as boolean)}
+                          className="h-5 w-5 rounded-md border-2 border-emerald-600/70 data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600 text-white shadow-sm transition-all mt-0.5"
                         />
-                        <Label htmlFor="terms" className="text-base font-medium cursor-pointer">
+                        <Label htmlFor="terms" className="text-base font-medium cursor-pointer leading-relaxed">
                           أقر بأنني قرأت جميع الشروط والأحكام وأوافق عليها، وأرغب في المتابعة لتقديم طلب الانتساب
                         </Label>
                       </div>
@@ -363,18 +429,32 @@ export default function JoinPage() {
                           <Label className="required">الجنس *</Label>
                           <RadioGroup
                             defaultValue="male"
-                            className="flex gap-6"
+                            className="grid grid-cols-2 gap-4"
                             onValueChange={(value) => setFormData({ ...formData, gender: value })}
                             value={formData.gender}
                           >
-                            <div className="flex items-center gap-2">
-                              <RadioGroupItem value="male" id="male" />
-                              <Label htmlFor="male">ذكر</Label>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <RadioGroupItem value="female" id="female" />
-                              <Label htmlFor="female">أنثى</Label>
-                            </div>
+                            <label
+                              htmlFor="male"
+                              className={`flex items-center gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                                formData.gender === "male"
+                                  ? "border-emerald-600 bg-emerald-50"
+                                  : "border-gray-300 hover:border-emerald-300"
+                              }`}
+                            >
+                              <RadioGroupItem value="male" id="male" className="border-2 border-emerald-600" />
+                              <span className="font-medium">ذكر</span>
+                            </label>
+                            <label
+                              htmlFor="female"
+                              className={`flex items-center gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                                formData.gender === "female"
+                                  ? "border-emerald-600 bg-emerald-50"
+                                  : "border-gray-300 hover:border-emerald-300"
+                              }`}
+                            >
+                              <RadioGroupItem value="female" id="female" className="border-2 border-emerald-600" />
+                              <span className="font-medium">أنثى</span>
+                            </label>
                           </RadioGroup>
                         </div>
 
@@ -622,18 +702,32 @@ export default function JoinPage() {
                             <Label>هل أنت عضو في حزب آخر حالياً؟</Label>
                             <RadioGroup
                               defaultValue="no"
-                              className="flex gap-6"
+                              className="grid grid-cols-2 gap-4"
                               onValueChange={(value) => setFormData({ ...formData, partyMembership: value })}
                               value={formData.partyMembership}
                             >
-                              <div className="flex items-center gap-2">
-                                <RadioGroupItem value="no" id="no-party" />
-                                <Label htmlFor="no-party">لا</Label>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <RadioGroupItem value="yes" id="yes-party" />
-                                <Label htmlFor="yes-party">نعم</Label>
-                              </div>
+                              <label
+                                htmlFor="no-party"
+                                className={`flex items-center gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                                  formData.partyMembership === "no"
+                                    ? "border-emerald-600 bg-emerald-50"
+                                    : "border-gray-300 hover:border-emerald-300"
+                                }`}
+                              >
+                                <RadioGroupItem value="no" id="no-party" className="border-2 border-emerald-600" />
+                                <span className="font-medium">لا</span>
+                              </label>
+                              <label
+                                htmlFor="yes-party"
+                                className={`flex items-center gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                                  formData.partyMembership === "yes"
+                                    ? "border-emerald-600 bg-emerald-50"
+                                    : "border-gray-300 hover:border-emerald-300"
+                                }`}
+                              >
+                                <RadioGroupItem value="yes" id="yes-party" className="border-2 border-emerald-600" />
+                                <span className="font-medium">نعم</span>
+                              </label>
                             </RadioGroup>
                           </div>
 
@@ -984,9 +1078,20 @@ export default function JoinPage() {
 
             {/* Submission Status */}
             {submitStatus === "success" && (
-              <div className="mt-8 p-6 bg-green-100 border border-green-400 text-green-800 rounded-lg flex items-center gap-3">
-                <CheckCircleIcon className="w-6 h-6" />
-                <p className="font-medium">تم إرسال طلب الانتساب بنجاح! سيتم مراجعة طلبك والرد عليك في أقرب وقت.</p>
+              <div className="mt-8 p-6 bg-green-100 border border-green-400 text-green-800 rounded-lg space-y-3">
+                <div className="flex items-center gap-3">
+                  <CheckCircleIcon className="w-6 h-6" />
+                  <p className="font-bold text-lg">تم إرسال طلب الانتساب بنجاح!</p>
+                </div>
+                <div className="bg-white/60 rounded-lg p-4 border border-green-300">
+                  <p className="text-sm text-green-700">رقم طلبك:</p>
+                  <p className="text-2xl font-bold text-green-900">{applicationNumber}</p>
+                  <p className="text-xs text-green-600 mt-1">احتفظ بهذا الرقم للمتابعة</p>
+                </div>
+                <p className="font-medium">
+                  ✉️ تم إرسال رسالة تأكيد إلى بريدك الإلكتروني تحتوي على تفاصيل الطلب.<br />
+                  سيتم مراجعة طلبك والرد عليك خلال 3-7 أيام عمل.
+                </p>
               </div>
             )}
             {submitStatus === "error" && (

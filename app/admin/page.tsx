@@ -15,6 +15,7 @@ import {
   Loader2,
   LogOut,
   ScrollText,
+  UserPlus,
 } from "lucide-react"
 import { useMemo } from "react"
 import { useAdminAccess, type UserRole } from "@/hooks/use-admin-access"
@@ -66,6 +67,14 @@ const ADMIN_LINKS = [
       color: "text-pink-600",
     roles: ["admin", "activities"],
     },
+  {
+    title: "طلبات الانتساب",
+    description: "مراجعة وإدارة طلبات العضوية الجديدة",
+    href: "/admin/join-applications",
+    icon: UserPlus,
+    color: "text-teal-600",
+    roles: ["admin"],
+  },
   {
     title: "ميزانيات الحزب",
     description: "إدارة ملفات الميزانيات المالية السنوية",
