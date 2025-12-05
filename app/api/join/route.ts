@@ -116,9 +116,24 @@ export async function POST(request: NextRequest) {
       throw new Error(`فشل حفظ الطلب: ${insertError.message || insertError.code || "unknown"}`)
     }
 
-    // Send notification email to admin
+    // Send confirmation email to user AND notification to admin
     try {
-      const { sendEmail } = await import("@/lib/email")
+      const { sendEmail, getApplicationSubmittedEmail } = await import("@/lib/email")
+      
+      // 1. Send confirmation to applicant
+      if (insertedApplication?.email) {
+        await sendEmail({
+          to: insertedApplication.email,
+          subject: `تم استلام طلبك - رقم ${insertedApplication.application_number}`,
+          html: getApplicationSubmittedEmail(
+            insertedApplication.full_name,
+            insertedApplication.application_number,
+          ),
+        })
+        console.log("[join] Confirmation email sent to:", insertedApplication.email)
+      }
+      
+      // 2. Send notification to admin
       const adminEmail = "info@namaaparty.com"
       
       const adminNotificationHtml = `
