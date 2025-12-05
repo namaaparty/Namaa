@@ -25,12 +25,10 @@ export default function StatementsClient({ statements, heroImage }: StatementsCl
 
   const handlePrevPage = () => {
     setCurrentPage((prev) => Math.max(prev - 1, 1))
-    window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
   const handleNextPage = () => {
     setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-    window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
   return (

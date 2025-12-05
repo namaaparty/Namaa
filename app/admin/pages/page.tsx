@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { Home, Pencil, Trash2, Save, ArrowRight, X, FileText, LogOut, Lock } from "lucide-react"
+import { Home, Pencil, Trash2, Save, ArrowRight, X, FileText, LogOut, Lock, Plus } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/components/ui/use-toast"
 import { useAdminAccess } from "@/hooks/use-admin-access"
@@ -87,6 +87,22 @@ export default function AdminPagesPage() {
     email: "",
     phone: "",
   })
+  const resetNewSectionForm = () => {
+    setNewSectionData({ title: "", content: "", image: "" })
+    setSectionImageFile(null)
+  }
+
+  const resetNewLeaderForm = () => {
+    setNewLeaderData({
+      name: "",
+      position: "",
+      bio: "",
+      isMain: false,
+      image: "",
+      email: "",
+      phone: "",
+    })
+  }
   const [showAddSection, setShowAddSection] = useState(false)
   const [showAddLeader, setShowAddLeader] = useState(false)
   const [heroImageFile, setHeroImageFile] = useState<File | null>(null)
@@ -98,6 +114,14 @@ export default function AdminPagesPage() {
     coordinates: "",
   })
   const [branchSaving, setBranchSaving] = useState(false)
+  const [economicProgramForm, setEconomicProgramForm] = useState({
+    title: "",
+    content: "",
+    order: "",
+    image: "",
+    type: "pillar" as "pillar" | "goal",
+  })
+  const [programSaving, setProgramSaving] = useState(false)
 
   const [formData, setFormData] = useState({
     title: "",
@@ -331,6 +355,100 @@ export default function AdminPagesPage() {
     } finally {
       setBranchSaving(false)
     }
+  }
+
+  const handleAddEconomicProgram = async () => {
+    if (!selectedPage || selectedPage.id !== "localDevelopment") return
+    if (!economicProgramForm.title.trim() || !economicProgramForm.content.trim()) {
+      toast({
+        variant: "destructive",
+        title: "تنبيه",
+        description: "يرجى إدخال عنوان ووصف للبرنامج الاقتصادي.",
+      })
+      return
+    }
+
+    const rawOrderValue = economicProgramForm.order.trim()
+      ? Number(economicProgramForm.order.trim())
+      : undefined
+
+    if (rawOrderValue !== undefined && Number.isNaN(rawOrderValue)) {
+      toast({
+        variant: "destructive",
+        title: "ترتيب غير صالح",
+        description: "يرجى إدخال رقم صحيح لترتيب العرض.",
+      })
+      return
+    }
+
+    const isPillar = economicProgramForm.type === "pillar"
+    let finalOrder: number
+
+    if (rawOrderValue === undefined) {
+      finalOrder = isPillar ? 1 : 4
+    } else {
+      finalOrder = Math.max(1, rawOrderValue)
+    }
+
+    if (isPillar && finalOrder > 3) {
+      finalOrder = 3
+    }
+
+    if (!isPillar && finalOrder < 4) {
+      finalOrder = 4
+    }
+
+    try {
+      setProgramSaving(true)
+      await addSection("localDevelopment", {
+        title: economicProgramForm.title.trim(),
+        content: economicProgramForm.content.trim(),
+        image: economicProgramForm.image || "",
+        order: finalOrder,
+      })
+
+      setEconomicProgramForm({
+        title: "",
+        content: "",
+        order: "",
+        image: "",
+        type: "pillar",
+      })
+
+      const updatedPages = await loadPages()
+      const refreshed = updatedPages.find((p) => p.id === "localDevelopment")
+      if (refreshed) {
+        setSelectedPage(refreshed)
+      }
+
+      toast({
+        title: "تمت الإضافة",
+        description: "تمت إضافة عنصر جديد إلى البرنامج الاقتصادي.",
+      })
+    } catch (error) {
+      console.error("[v0] Error adding economic program section:", error)
+      toast({
+        variant: "destructive",
+        title: "خطأ",
+        description: "تعذر إضافة البرنامج الاقتصادي، حاول مرة أخرى.",
+      })
+    } finally {
+      setProgramSaving(false)
+    }
+  }
+
+  const openAddSectionForm = () => {
+    resetNewSectionForm()
+    setEditingSection(null)
+    setShowAddSection(true)
+    setEditingLeader(null)
+  }
+
+  const openAddLeaderForm = () => {
+    resetNewLeaderForm()
+    setEditingLeader(null)
+    setShowAddLeader(true)
+    setShowAddSection(false)
   }
 
   const handleEditSection = (section: PageSection) => {
@@ -1125,6 +1243,18 @@ export default function AdminPagesPage() {
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-8">
               <h1 className="text-4xl font-bold">{getPageDisplayName(selectedPage)}</h1>
               <div className="flex flex-wrap items-center gap-3 justify-end">
+                {viewMode === "sections" && selectedPage.id !== "leadership" && (
+                  <Button onClick={openAddSectionForm} size="sm" className="gap-2">
+                    <Plus size={16} />
+                    إضافة قسم جديد
+                  </Button>
+                )}
+                {selectedPage.id === "leadership" && viewMode === "leaders" && (
+                  <Button onClick={openAddLeaderForm} size="sm" className="gap-2">
+                    <Plus size={16} />
+                    إضافة قيادي جديد
+                  </Button>
+                )}
                 <Button onClick={handleBack} variant="outline" size="sm" className="gap-2 bg-transparent">
                   <ArrowRight size={16} />
                   العودة إلى إدارة المحتوى
@@ -1472,6 +1602,97 @@ export default function AdminPagesPage() {
                       إلغاء
                     </Button>
                   </div>
+                </div>
+              </Card>
+            )}
+
+            {selectedPage.id === "localDevelopment" && (
+              <Card className="p-6 mb-6 space-y-4">
+                <div>
+                  <h2 className="text-2xl font-bold mb-2">إضافة عنصر للبرنامج الاقتصادي</h2>
+                  <p className="text-sm text-muted-foreground">
+                    اختر إن كان العنصر محوراً رئيسياً أو هدفاً داعماً. يتم عرض المحاور في القسم العلوي والأهداف في القسم
+                    السفلي تلقائياً وفقاً للنوع والترتيب الذي تحدده.
+                  </p>
+                </div>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label>نوع العنصر</Label>
+                    <select
+                      value={economicProgramForm.type}
+                      onChange={(e) =>
+                        setEconomicProgramForm((prev) => ({ ...prev, type: e.target.value as "pillar" | "goal" }))
+                      }
+                      className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-primary bg-white"
+                    >
+                      <option value="pillar">محور رئيسي</option>
+                      <option value="goal">هدف داعم</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>عنوان المحور / الهدف</Label>
+                    <Input
+                      value={economicProgramForm.title}
+                      onChange={(e) => setEconomicProgramForm((prev) => ({ ...prev, title: e.target.value }))}
+                      placeholder="مثال: تمكين الاقتصاد المحلي"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>ترتيب العرض</Label>
+                    <Input
+                      type="number"
+                      min={1}
+                      value={economicProgramForm.order}
+                      onChange={(e) => setEconomicProgramForm((prev) => ({ ...prev, order: e.target.value }))}
+                      placeholder="مثال: 1"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      اترك الحقل فارغاً لإضافة العنصر في نهاية القائمة تلقائياً.
+                    </p>
+                  </div>
+                  <div className="space-y-2 md:col-span-2">
+                    <Label>صورة مرافقة (اختياري)</Label>
+                    <div className="space-y-2">
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={(event) => {
+                          const file = event.target.files?.[0]
+                          if (!file) return
+                          const reader = new FileReader()
+                          reader.onloadend = () => {
+                            const dataUrl = reader.result as string
+                            setEconomicProgramForm((prev) => ({ ...prev, image: dataUrl }))
+                          }
+                          reader.readAsDataURL(file)
+                        }}
+                      />
+                      {economicProgramForm.image && (
+                        <div className="relative w-full h-48 border rounded-lg overflow-hidden">
+                          <img
+                            src={economicProgramForm.image || "/placeholder.svg"}
+                            alt="صورة البرنامج الاقتصادي"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label>الوصف التفصيلي</Label>
+                  <Textarea
+                    value={economicProgramForm.content}
+                    onChange={(e) => setEconomicProgramForm((prev) => ({ ...prev, content: e.target.value }))}
+                    className="min-h-[160px]"
+                    placeholder="اشرح تفاصيل المحور أو الهدف الاقتصادي..."
+                  />
+                </div>
+                <div className="flex justify-end">
+                  <Button onClick={handleAddEconomicProgram} disabled={programSaving} className="gap-2">
+                    <Save size={16} />
+                    {programSaving ? "جاري الإضافة..." : "إضافة البرنامج"}
+                  </Button>
                 </div>
               </Card>
             )}

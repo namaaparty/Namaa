@@ -133,33 +133,16 @@ function AdminLoginContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f6f5fb] via-white to-[#eaf4ef] flex items-center justify-center px-4 py-10">
-      <div className="grid w-full max-w-5xl gap-8 lg:grid-cols-[1.1fr_0.9fr] items-stretch">
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-600 via-emerald-500 to-teal-500 p-10 text-white shadow-2xl border border-emerald-600/50">
-          <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top,_#ffffff33,_transparent)]" aria-hidden />
-          <div className="relative flex flex-col gap-6">
-            <div className="flex items-center gap-4">
-              <div className="rounded-2xl bg-white/95 p-4 shadow-xl">
-                <Image src="/logo-colored.png" alt="شعار حزب نماء" width={64} height={64} priority />
-              </div>
-              <div>
-                <p className="text-sm uppercase tracking-[0.5em] text-white/70">NAMAA PARTY</p>
-                <p className="text-2xl font-bold">بوابة التحكم المركزية</p>
-              </div>
-            </div>
-            <p className="text-lg leading-relaxed text-white/90">
-              ندعوك لتسجيل الدخول لإدارة المحتوى الخاص بك حسب الصلاحيات الممنوحة لك. ستظل جلستك فعالة على الأجهزة
-              الموثوقة عند تفعيل خيار التذكر.
-            </p>
-            <div className="rounded-2xl bg-white/10 p-5 backdrop-blur-sm border border-white/15">
-              <p className="text-sm text-white/75">معلومات الدخول</p>
-              <p className="text-base font-semibold">admin@namaaparty.com</p>
-              <p className="text-sm text-white/80">يرجى التواصل مع المشرف التقني لتحديث كلمات المرور والصلاحيات.</p>
+      <Card className="w-full max-w-lg shadow-2xl border border-border/60">
+        <CardHeader className="text-center space-y-4">
+          <div className="flex flex-col items-center gap-4">
+            <Image src="/logo-colored.png" alt="شعار حزب نماء" width={320} height={320} priority className="h-38 w-38 object-contain" />
+            <div>
+              <p className="text-sm uppercase tracking-[0.5em] text-muted-foreground">NAMAA PARTY</p>
+              <p className="text-2xl font-bold text-foreground">بوابة التحكم المركزية</p>
             </div>
           </div>
-        </div>
-
-        <Card className="w-full max-w-md justify-self-center shadow-2xl border border-border/60">
-          <CardHeader className="text-center space-y-2">
+          <div className="space-y-2">
             <p className="text-sm text-muted-foreground">مرحباً بعودتك</p>
             <CardTitle className="text-3xl">تسجيل الدخول</CardTitle>
             <CardDescription>أدخل بيانات الاعتماد الخاصة بك للمتابعة إلى لوحة الإدارة</CardDescription>
@@ -168,21 +151,22 @@ function AdminLoginContent() {
                 لا تملك الصلاحية لزيارة الصفحة المطلوبة.
               </div>
             )}
-          </CardHeader>
-          <CardContent>
+          </div>
+        </CardHeader>
+        <CardContent>
             <form className="space-y-5" onSubmit={handleSubmit}>
               <div className="space-y-2">
-                <Label htmlFor="email">البريد الإلكتروني</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="admin@namaaparty.com"
-                  dir="ltr"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  required
-                  autoComplete="email"
-                />
+              <Label htmlFor="email">اسم المستخدم</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="Username'"
+                dir="ltr"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                required
+                autoComplete="email"
+              />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">كلمة المرور</Label>
@@ -234,7 +218,6 @@ function AdminLoginContent() {
             </div>
           </CardContent>
         </Card>
-      </div>
     </div>
   )
 }

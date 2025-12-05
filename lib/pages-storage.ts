@@ -807,7 +807,14 @@ export async function updateSection(pageId: string, sectionId: string, updates: 
   }
 }
 
-export async function addSection(pageId: string, section: Omit<PageSection, "id" | "order">): Promise<void> {
+type NewSectionInput = {
+  title: string
+  content: string
+  image?: string | null
+  order?: number
+}
+
+export async function addSection(pageId: string, section: NewSectionInput): Promise<void> {
   try {
     // Get current max order
     const { data: sections } = await supabase
@@ -818,6 +825,10 @@ export async function addSection(pageId: string, section: Omit<PageSection, "id"
       .limit(1)
 
     const maxOrder = sections && sections.length > 0 ? sections[0].order_number : 0
+    const desiredOrder =
+      typeof section.order === "number" && !Number.isNaN(section.order) && section.order > 0
+        ? section.order
+        : maxOrder + 1
 
     // Remove id from input data as Supabase uses UUID automatically
     const { error } = await supabase.from("page_sections").insert([
@@ -826,7 +837,7 @@ export async function addSection(pageId: string, section: Omit<PageSection, "id"
         title: section.title,
         content: section.content,
         image: section.image || null,
-        order_number: maxOrder + 1,
+        order_number: desiredOrder,
       },
     ])
 

@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card"
 import Link from "next/link"
-import { TrendingUp, GraduationCap, Settings, MapPin, Briefcase, Facebook } from "lucide-react"
+import { TrendingUp, GraduationCap, MapPin, Facebook } from "lucide-react"
 import Image from "next/image"
 import { getAllSections } from "@/lib/pages-storage"
 import { createClient as createServerSupabase } from "@/lib/supabase/server"
@@ -33,8 +33,8 @@ async function fetchPageData() {
 export default async function LocalDevelopmentPage() {
   const { sections, heroImage } = await fetchPageData()
 
-  const mainPillars = sections.filter((s: Section) => s.order_number <= 3)
-  const supportingGoals = sections.filter((s: Section) => s.order_number > 3)
+  const sortedSections = [...sections].sort((a: Section, b: Section) => a.order_number - b.order_number)
+  const mainPillars = sortedSections
 
   return (
     <div className="min-h-screen bg-background">
@@ -88,11 +88,26 @@ export default async function LocalDevelopmentPage() {
                   <div key={pillar.id} className="text-center mb-12">
                     <Card className="overflow-hidden hover:shadow-xl transition-all border-2">
                       <div className="grid lg:grid-cols-[200px_1fr] gap-0">
-                        {/* Number and Icon Column */}
-                        <div className="bg-gradient-to-br from-primary to-primary/80 p-4 lg:p-6 flex flex-col items-center justify-center text-white min-h-[200px]">
-                          <div className="text-4xl lg:text-5xl font-bold opacity-20 mb-2">{pillar.order_number}</div>
-                          <Icon className="w-10 h-10 lg:w-12 lg:h-12 mb-2" />
-                          <div className="text-lg lg:text-xl font-bold text-center">{pillar.title}</div>
+                        {/* Image / Number Column */}
+                        <div className="relative min-h-[200px]">
+                          {pillar.image ? (
+                            <>
+                              <Image
+                                src={pillar.image || "/placeholder.svg"}
+                                alt={pillar.title}
+                                fill
+                                className="object-cover"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-black/70" />
+                            </>
+                          ) : (
+                            <div className="absolute inset-0 bg-gradient-to-br from-primary to-primary/80" aria-hidden />
+                          )}
+                          <div className="relative z-10 h-full flex flex-col items-center justify-center text-white px-4 py-6">
+                            <div className="text-4xl lg:text-5xl font-bold opacity-80 mb-2">{pillar.order_number}</div>
+                            {!pillar.image && <Icon className="w-10 h-10 lg:w-12 lg:h-12 mb-2" />}
+                            <div className="text-lg lg:text-xl font-bold text-center">{pillar.title}</div>
+                          </div>
                         </div>
 
                         {/* Content Column */}
@@ -110,39 +125,6 @@ export default async function LocalDevelopmentPage() {
           </div>
         </section>
 
-        {/* Supporting Goals Section */}
-        {supportingGoals.length > 0 && (
-          <section className="max-w-7xl mx-auto px-6 lg:px-8 mb-20">
-            <div className="text-center max-w-4xl mx-auto mb-16">
-              <div className="text-3xl lg:text-4xl font-bold mb-6">الأهداف الداعمة للبرنامج الاقتصادي</div>
-              <div className="w-24 h-1 bg-primary mx-auto"></div>
-            </div>
-
-            <div className="space-y-16">
-              {supportingGoals.map((goal) => (
-                <div key={goal.id} className="text-center mb-12">
-                  <Card className="overflow-hidden hover:shadow-xl transition-all border-2">
-                    <div className="grid lg:grid-cols-[200px_1fr] gap-0">
-                      {/* Number and Icon Column */}
-                      <div className="bg-gradient-to-br from-primary to-primary/80 p-4 lg:p-6 flex flex-col items-center justify-center text-white min-h-[200px]">
-                        <div className="text-4xl lg:text-5xl font-bold opacity-20 mb-2">{goal.order_number}</div>
-                        <Briefcase className="w-10 h-10 lg:w-12 lg:h-12 mb-2" />
-                        <div className="text-lg lg:text-xl font-bold text-center">{goal.title}</div>
-                      </div>
-
-                      {/* Content Column */}
-                      <div className="p-6 lg:p-8">
-                        <div className="text-base text-muted-foreground leading-relaxed whitespace-pre-wrap text-right">
-                          {goal.content}
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
       </div>
 
       {/* Footer */}
