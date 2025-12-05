@@ -67,8 +67,15 @@ interface HomeClientProps {
   }
 }
 
+const SPLASH_SEEN_KEY = "namaa-splash-seen"
+
 export default function HomeClient({ heroImage, homeContent, statistics }: HomeClientProps) {
-  const [showSplash, setShowSplash] = useState(false)
+  const [showSplash, setShowSplash] = useState<boolean>(() => {
+    if (typeof window === "undefined") {
+      return true
+    }
+    return window.sessionStorage.getItem(SPLASH_SEEN_KEY) !== "true"
+  })
 
   useEffect(() => {
     console.log("[v0] HomeClient mounted")
@@ -78,12 +85,23 @@ export default function HomeClient({ heroImage, homeContent, statistics }: HomeC
   }, [])
 
   useEffect(() => {
+    if (typeof window === "undefined") {
+      return
+    }
+
+    const hasSeenSplash = window.sessionStorage.getItem(SPLASH_SEEN_KEY) === "true"
+    if (hasSeenSplash) {
+      setShowSplash(false)
+      return
+    }
+
     setShowSplash(true)
 
-    const timer = setTimeout(() => {
+    const timer = window.setTimeout(() => {
       console.log("[v0] Hiding splash screen")
       setShowSplash(false)
-    }, 3500)
+      window.sessionStorage.setItem(SPLASH_SEEN_KEY, "true")
+    }, 1800)
 
     return () => clearTimeout(timer)
   }, [])
