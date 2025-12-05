@@ -16,7 +16,7 @@ export async function sendEmail({ to, subject, html }: SendEmailParams) {
 
   try {
     const { data, error } = await resend.emails.send({
-      from: "حزب نماء <onboarding@resend.dev>", // Replace with your verified domain later
+      from: "حزب نماء <info@namaaparty.com>",
       to,
       subject,
       html,
