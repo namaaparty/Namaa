@@ -90,6 +90,36 @@ const STATUS_COLORS = {
   rejected: "bg-red-100 text-red-800 border-red-200",
 }
 
+const MARITAL_STATUS_AR: Record<string, string> = {
+  single: "أعزب/عزباء",
+  married: "متزوج/متزوجة",
+  divorced: "مطلق/مطلقة",
+  widowed: "أرمل/أرملة",
+}
+
+const GOVERNORATE_AR: Record<string, string> = {
+  amman: "عمان",
+  irbid: "إربد",
+  zarqa: "الزرقاء",
+  balqa: "البلقاء",
+  madaba: "مادبا",
+  karak: "الكرك",
+  tafilah: "الطفيلة",
+  maan: "معان",
+  aqaba: "العقبة",
+  jerash: "جرش",
+  ajloun: "عجلون",
+  mafraq: "المفرق",
+}
+
+const QUALIFICATION_AR: Record<string, string> = {
+  highschool: "ثانوية عامة",
+  diploma: "دبلوم",
+  bachelor: "بكالوريوس",
+  master: "ماجستير",
+  phd: "دكتوراه",
+}
+
 export default function JoinApplicationsPage() {
   const router = useRouter()
   const { toast } = useToast()
@@ -352,7 +382,7 @@ export default function JoinApplicationsPage() {
             <DialogDescription>
               {selectedApplication && (
                 <span>
-                  تم التقديم في {new Date(selectedApplication.submitted_at).toLocaleDateString("ar-JO")}
+                  تم التقديم في {new Date(selectedApplication.submitted_at).toLocaleDateString("en-GB")}
                 </span>
               )}
             </DialogDescription>
@@ -426,11 +456,11 @@ export default function JoinApplicationsPage() {
                   </div>
                   <div>
                     <span className="text-muted-foreground">الحالة الاجتماعية:</span>
-                    <p className="font-semibold">{selectedApplication.marital_status}</p>
+                    <p className="font-semibold">{MARITAL_STATUS_AR[selectedApplication.marital_status] || selectedApplication.marital_status}</p>
                   </div>
                   <div>
                     <span className="text-muted-foreground">المحافظة:</span>
-                    <p className="font-semibold">{selectedApplication.governorate}</p>
+                    <p className="font-semibold">{GOVERNORATE_AR[selectedApplication.governorate] || selectedApplication.governorate}</p>
                   </div>
                   <div>
                     <span className="text-muted-foreground">اللواء:</span>
@@ -451,7 +481,7 @@ export default function JoinApplicationsPage() {
                 <div className="grid md:grid-cols-2 gap-4 text-sm">
                   <div>
                     <span className="text-muted-foreground">المؤهل العلمي:</span>
-                    <p className="font-semibold">{selectedApplication.qualification || "غير متوفر"}</p>
+                    <p className="font-semibold">{QUALIFICATION_AR[selectedApplication.qualification] || selectedApplication.qualification || "غير متوفر"}</p>
                   </div>
                   <div>
                     <span className="text-muted-foreground">التخصص:</span>
