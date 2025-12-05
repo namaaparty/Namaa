@@ -114,6 +114,7 @@ export default function AdminPagesPage() {
     coordinates: "",
   })
   const [branchSaving, setBranchSaving] = useState(false)
+  const [showBranchForm, setShowBranchForm] = useState(false)
   const [economicProgramForm, setEconomicProgramForm] = useState({
     title: "",
     content: "",
@@ -122,6 +123,7 @@ export default function AdminPagesPage() {
     type: "pillar" as "pillar" | "goal",
   })
   const [programSaving, setProgramSaving] = useState(false)
+  const [showEconomicProgramForm, setShowEconomicProgramForm] = useState(false)
 
   const [formData, setFormData] = useState({
     title: "",
@@ -251,14 +253,29 @@ export default function AdminPagesPage() {
       console.log("[v0] Loading all pages from Supabase")
       const allPages = await getAllPages()
 
+      // Sort pages to match navbar order
+      const navbarOrder = ["home", "vision", "leadership", "localDevelopment", "statements", "branches"]
+      
       const sortedPages = [...allPages].sort((a, b) => {
+        const indexA = navbarOrder.indexOf(a.id)
+        const indexB = navbarOrder.indexOf(b.id)
+        
+        // If both are in navbar, sort by navbar order
+        if (indexA !== -1 && indexB !== -1) {
+          return indexA - indexB
+        }
+        // If only one is in navbar, prioritize it
+        if (indexA !== -1) return -1
+        if (indexB !== -1) return 1
+        
+        // Otherwise sort alphabetically
         const titleA = a.title?.trim() || a.id
         const titleB = b.title?.trim() || b.id
         return titleA.localeCompare(titleB, "ar", { sensitivity: "base" })
       })
 
       const filteredPages = sortedPages.filter(
-        (page) => page.id !== "activities" && page.id !== "goals" && page.id !== "constitution",
+        (page) => page.id !== "activities" && page.id !== "goals" && page.id !== "constitution" && page.id !== "news",
       )
 
       setPageContents(filteredPages)
@@ -1060,7 +1077,11 @@ export default function AdminPagesPage() {
                   <div className="text-sm text-gray-500">
                     آخر تعديل:{" "}
                     {page.lastModified
-                      ? new Date(page.lastModified).toLocaleDateString("ar-JO")
+                      ? new Date(page.lastModified).toLocaleDateString("en-GB", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                        })
                       : "غير متوفر"}
                   </div>
                   {page.id === "home" && (
@@ -1243,7 +1264,7 @@ export default function AdminPagesPage() {
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-8">
               <h1 className="text-4xl font-bold">{getPageDisplayName(selectedPage)}</h1>
               <div className="flex flex-wrap items-center gap-3 justify-end">
-                {viewMode === "sections" && selectedPage.id !== "leadership" && (
+                {viewMode === "sections" && selectedPage.id !== "leadership" && selectedPage.id !== "home" && selectedPage.id !== "vision" && selectedPage.id !== "localDevelopment" && selectedPage.id !== "branches" && (
                   <Button onClick={openAddSectionForm} size="sm" className="gap-2">
                     <Plus size={16} />
                     إضافة قسم جديد
@@ -1607,14 +1628,59 @@ export default function AdminPagesPage() {
             )}
 
             {selectedPage.id === "localDevelopment" && (
-              <Card className="p-6 mb-6 space-y-4">
-                <div>
-                  <h2 className="text-2xl font-bold mb-2">إضافة عنصر للبرنامج الاقتصادي</h2>
-                  <p className="text-sm text-muted-foreground">
-                    اختر إن كان العنصر محوراً رئيسياً أو هدفاً داعماً. يتم عرض المحاور في القسم العلوي والأهداف في القسم
-                    السفلي تلقائياً وفقاً للنوع والترتيب الذي تحدده.
-                  </p>
-                </div>
+              <>
+                <Card className="p-6 mb-6">
+                  <h2 className="text-xl font-bold mb-4">صورة الخلفية العلوية</h2>
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="block text-sm font-medium text-gray-700 mb-2">
+                        تغيير صورة الخلفية (الموصى به: 1920×1080 بكسل)
+                      </Label>
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleHeroImageChange}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                      />
+                    </div>
+                    {heroImageData && (
+                      <div className="relative w-full h-64 border rounded-lg overflow-hidden">
+                        <img
+                          src={heroImageData || "/placeholder.svg"}
+                          alt="صورة الخلفية"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                    {heroImageData && (
+                      <Button onClick={handleSaveHeroImage} className="gap-2" disabled={isSaving}>
+                        {isSaving ? "جاري الحفظ..." : "حفظ صورة الخلفية"}
+                      </Button>
+                    )}
+                  </div>
+                </Card>
+
+                {!showEconomicProgramForm ? (
+                  <div className="mb-6">
+                    <Button onClick={() => setShowEconomicProgramForm(true)} className="gap-2">
+                      <Plus size={16} />
+                      إضافة عنصر للبرنامج الاقتصادي
+                    </Button>
+                  </div>
+                ) : (
+                  <Card className="p-6 mb-6 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h2 className="text-2xl font-bold mb-2">إضافة عنصر للبرنامج الاقتصادي</h2>
+                        <p className="text-sm text-muted-foreground">
+                          اختر إن كان العنصر محوراً رئيسياً أو هدفاً داعماً. يتم عرض المحاور في القسم العلوي والأهداف في القسم
+                          السفلي تلقائياً وفقاً للنوع والترتيب الذي تحدده.
+                        </p>
+                      </div>
+                      <Button variant="ghost" onClick={() => setShowEconomicProgramForm(false)} size="sm">
+                        <X size={20} />
+                      </Button>
+                    </div>
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
                     <Label>نوع العنصر</Label>
@@ -1688,23 +1754,86 @@ export default function AdminPagesPage() {
                     placeholder="اشرح تفاصيل المحور أو الهدف الاقتصادي..."
                   />
                 </div>
-                <div className="flex justify-end">
-                  <Button onClick={handleAddEconomicProgram} disabled={programSaving} className="gap-2">
-                    <Save size={16} />
-                    {programSaving ? "جاري الإضافة..." : "إضافة البرنامج"}
-                  </Button>
-                </div>
-              </Card>
+                    <div className="flex justify-end gap-2">
+                      <Button onClick={handleAddEconomicProgram} disabled={programSaving} className="gap-2">
+                        <Save size={16} />
+                        {programSaving ? "جاري الإضافة..." : "إضافة البرنامج"}
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        onClick={() => {
+                          setShowEconomicProgramForm(false)
+                          setEconomicProgramForm({
+                            title: "",
+                            content: "",
+                            order: "",
+                            image: "",
+                            type: "pillar",
+                          })
+                        }} 
+                        className="bg-transparent"
+                      >
+                        إلغاء
+                      </Button>
+                    </div>
+                  </Card>
+                )}
+              </>
             )}
 
             {selectedPage.id === "branches" && (
-              <Card className="p-6 mb-6 space-y-4">
-                <div>
-                  <h2 className="text-2xl font-bold mb-2">إضافة فرع جديد</h2>
-                  <p className="text-sm text-muted-foreground">
-                    أدخل بيانات الفرع وسيتم عرضه فوراً ضمن صفحة فروع الحزب. يمكنك تضمين العنوان، رقم الهاتف، والإحداثيات إن وجدت.
-                  </p>
-                </div>
+              <>
+                <Card className="p-6 mb-6">
+                  <h2 className="text-xl font-bold mb-4">صورة الخلفية العلوية</h2>
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="block text-sm font-medium text-gray-700 mb-2">
+                        تغيير صورة الخلفية (الموصى به: 1920×1080 بكسل)
+                      </Label>
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleHeroImageChange}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                      />
+                    </div>
+                    {heroImageData && (
+                      <div className="relative w-full h-64 border rounded-lg overflow-hidden">
+                        <img
+                          src={heroImageData || "/placeholder.svg"}
+                          alt="صورة الخلفية"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                    {heroImageData && (
+                      <Button onClick={handleSaveHeroImage} className="gap-2" disabled={isSaving}>
+                        {isSaving ? "جاري الحفظ..." : "حفظ صورة الخلفية"}
+                      </Button>
+                    )}
+                  </div>
+                </Card>
+
+                {!showBranchForm ? (
+                  <div className="mb-6">
+                    <Button onClick={() => setShowBranchForm(true)} className="gap-2">
+                      <Plus size={16} />
+                      إضافة فرع جديد
+                    </Button>
+                  </div>
+                ) : (
+                  <Card className="p-6 mb-6 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h2 className="text-2xl font-bold mb-2">إضافة فرع جديد</h2>
+                        <p className="text-sm text-muted-foreground">
+                          أدخل بيانات الفرع وسيتم عرضه فوراً ضمن صفحة فروع الحزب. يمكنك تضمين العنوان، رقم الهاتف، والإحداثيات إن وجدت.
+                        </p>
+                      </div>
+                      <Button variant="ghost" onClick={() => setShowBranchForm(false)} size="sm">
+                        <X size={20} />
+                      </Button>
+                    </div>
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
                     <Label>اسم الفرع</Label>
@@ -1740,45 +1869,64 @@ export default function AdminPagesPage() {
                     />
                   </div>
                 </div>
-                <div className="flex justify-end">
-                  <Button onClick={handleAddBranch} disabled={branchSaving} className="gap-2">
-                    <Save size={16} />
-                    {branchSaving ? "جاري الإضافة..." : "حفظ الفرع"}
-                  </Button>
+                    <div className="flex justify-end gap-2">
+                      <Button onClick={handleAddBranch} disabled={branchSaving} className="gap-2">
+                        <Save size={16} />
+                        {branchSaving ? "جاري الإضافة..." : "حفظ الفرع"}
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        onClick={() => {
+                          setShowBranchForm(false)
+                          setBranchForm({
+                            title: "",
+                            address: "",
+                            phone: "",
+                            coordinates: "",
+                          })
+                        }} 
+                        className="bg-transparent"
+                      >
+                        إلغاء
+                      </Button>
+                    </div>
+                  </Card>
+                )}
+              </>
+            )}
+
+            {selectedPage.id !== "localDevelopment" && selectedPage.id !== "branches" && (
+              <Card className="p-6 mb-6">
+                <h2 className="text-xl font-bold mb-4">صورة الخلفية العلوية</h2>
+                <div className="space-y-4">
+                  <div>
+                    <Label className="block text-sm font-medium text-gray-700 mb-2">
+                      تغيير صورة الخلفية (الموصى به: 1920×1080 بكسل)
+                    </Label>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleHeroImageChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    />
+                  </div>
+                  {heroImageData && (
+                    <div className="relative w-full h-64 border rounded-lg overflow-hidden">
+                      <img
+                        src={heroImageData || "/placeholder.svg"}
+                        alt="صورة الخلفية"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                  {heroImageData && (
+                    <Button onClick={handleSaveHeroImage} className="gap-2" disabled={isSaving}>
+                      {isSaving ? "جاري الحفظ..." : "حفظ صورة الخلفية"}
+                    </Button>
+                  )}
                 </div>
               </Card>
             )}
-
-            <Card className="p-6 mb-6">
-              <h2 className="text-xl font-bold mb-4">صورة الخلفية العلوية</h2>
-              <div className="space-y-4">
-                <div>
-                  <Label className="block text-sm font-medium text-gray-700 mb-2">
-                    تغيير صورة الخلفية (الموصى به: 1920×1080 بكسل)
-                  </Label>
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleHeroImageChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                  />
-                </div>
-                {heroImageData && (
-                  <div className="relative w-full h-64 border rounded-lg overflow-hidden">
-                    <img
-                      src={heroImageData || "/placeholder.svg"}
-                      alt="صورة الخلفية"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                )}
-                {heroImageData && (
-                  <Button onClick={handleSaveHeroImage} className="gap-2" disabled={isSaving}>
-                    {isSaving ? "جاري الحفظ..." : "حفظ صورة الخلفية"}
-                  </Button>
-                )}
-              </div>
-            </Card>
 
             {viewMode === "leaders" && selectedPage.id === "leadership" && selectedPage.leaders ? (
               <div className="space-y-4">
@@ -1832,7 +1980,19 @@ export default function AdminPagesPage() {
             ) : (
               <div className="space-y-4">
                 {selectedPage.sections && selectedPage.sections.length > 0 ? (
-                  selectedPage.sections.map((section) => (
+                  (() => {
+                    // For home page, sort so "النص الرئيسي" appears before "عن حزب نماء"
+                    const sectionsToDisplay = selectedPage.id === "home"
+                      ? [...selectedPage.sections].sort((a, b) => {
+                          if (a.title === "النص الرئيسي") return -1
+                          if (b.title === "النص الرئيسي") return 1
+                          if (a.title === "عن حزب نماء") return 1
+                          if (b.title === "عن حزب نماء") return -1
+                          return 0
+                        })
+                      : selectedPage.sections
+                    
+                    return sectionsToDisplay.map((section) => (
                     <Card key={section.id} className="p-6">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
@@ -1868,6 +2028,7 @@ export default function AdminPagesPage() {
                       </div>
                     </Card>
                   ))
+                  })()
                 ) : (
                   <div className="text-center py-8 text-gray-500">
                     لا توجد أقسام بعد. اضغط على "إضافة قسم جديد" لبدء الإضافة.

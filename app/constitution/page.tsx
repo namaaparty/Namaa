@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button"
 import { FileDown } from "lucide-react"
 import { createClient as createServerSupabase } from "@/lib/supabase/server"
 
+export const revalidate = 0
+
 async function getLatestPdfUrl() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -23,7 +25,8 @@ async function getLatestPdfUrl() {
     .from("constitution_documents")
     .select("file_url")
     .order("uploaded_at", { ascending: false })
-    .maybeSingle()
+    .limit(1)
+    .single()
 
   if (error) {
     console.error("[constitution] Failed to fetch pdf:", error)
@@ -174,24 +177,13 @@ export default async function ConstitutionPage() {
               <p className="text-muted-foreground">يمكنك الاطلاع على النظام الأساسي أو تحميله بصيغة PDF.</p>
             </div>
             <div className="flex flex-wrap gap-3">
-              <Button variant="outline" asChild>
-                <Link href="#constitution-content">قراءة المزيد</Link>
-              </Button>
               {pdfUrl ? (
-                <>
-                  <Button asChild className="gap-2">
-                    <a href={pdfUrl} target="_blank" rel="noopener noreferrer">
-                      <FileDown className="w-4 h-4" />
-                      تحميل PDF
-                    </a>
-                  </Button>
-                  <Button variant="outline" asChild className="gap-2">
-                    <a href={pdfUrl} target="_blank" rel="noopener noreferrer">
-                      <FileDown className="w-4 h-4" />
-                      عرض الملف الحالي
-                    </a>
-                  </Button>
-                </>
+                <Button asChild className="gap-2">
+                  <a href={pdfUrl} target="_blank" rel="noopener noreferrer" download>
+                    <FileDown className="w-4 h-4" />
+                    تنزيل النظام الاساسي
+                  </a>
+                </Button>
               ) : (
                 <Button variant="secondary" disabled className="gap-2 opacity-70">
                   <FileDown className="w-4 h-4" />
@@ -212,9 +204,9 @@ export default async function ConstitutionPage() {
         <div className="text-center">
           <Link href="/" className="text-primary hover:underline">
             العودة إلى الصفحة الرئيسية
-                </Link>
-              </div>
-            </div>
+          </Link>
+        </div>
+      </div>
     </main>
   )
 }
