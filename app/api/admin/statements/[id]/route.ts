@@ -12,8 +12,9 @@ function getServiceClient() {
   return createServiceClient(supabaseUrl, serviceRoleKey)
 }
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: Request, props: { params: Promise<{ id: string }> }) {
   try {
+    const params = await props.params
     const supabase = getServiceClient()
     const body = await request.json()
     const { title, description, content, image } = body
@@ -50,8 +51,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(_request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(_request: Request, props: { params: Promise<{ id: string }> }) {
   try {
+    const params = await props.params
     const supabase = getServiceClient()
     const { error } = await supabase.from("statements").delete().eq("id", params.id)
 
