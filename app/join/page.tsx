@@ -109,16 +109,12 @@ export default function JoinPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("[join-form] Submit triggered, current step:", currentStep)
-    console.log("[join-form] Form data:", formData)
-    
     setIsSubmitting(true)
     setSubmitStatus("idle")
 
     try {
       // Validate required fields
       if (!formData.nationalId || !formData.phone || !formData.fullName) {
-        console.log("[join-form] Validation failed - missing required fields")
         toast({
           variant: "destructive",
           title: "تنبيه",
@@ -127,8 +123,6 @@ export default function JoinPage() {
         setIsSubmitting(false)
         return
       }
-      
-      console.log("[join-form] Validation passed, building FormData...")
 
       const submitData = new FormData()
       
@@ -146,16 +140,12 @@ export default function JoinPage() {
       if (formData.clearanceFile) submitData.append("clearanceFile", formData.clearanceFile)
       if (formData.photoFile) submitData.append("photoFile", formData.photoFile)
 
-      console.log("[join-form] Sending to API...")
-      
       const response = await fetch("/api/join", {
         method: "POST",
         body: submitData,
       })
 
-      console.log("[join-form] Response status:", response.status)
       const result = await response.json()
-      console.log("[join-form] Response data:", result)
 
       if (!response.ok) {
         throw new Error(result.error || "فشل إرسال الطلب")

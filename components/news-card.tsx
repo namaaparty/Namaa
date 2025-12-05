@@ -15,9 +15,15 @@ export function NewsCard({ article }: { article: NewsArticle }) {
   }
 
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow">
-      <div className="relative h-48 w-full bg-muted">
-        <Image src={article.image || "/placeholder.svg"} alt={article.title} fill className="object-cover" />
+    <Card className="overflow-hidden hover:shadow-lg transition-shadow p-0 group">
+      <div className="relative h-64 w-full overflow-hidden">
+        <Image 
+          src={article.image || "/placeholder.svg"} 
+          alt={article.title} 
+          fill 
+          className="object-cover group-hover:scale-105 transition-transform duration-500"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        />
       </div>
       <div className="p-4">
         <div className="flex items-center justify-between mb-2">
@@ -30,11 +36,11 @@ export function NewsCard({ article }: { article: NewsArticle }) {
           <Eye className="w-4 h-4" />
           <span>{article.views || 0} مشاهدة</span>
         </div>
-        <Link href={`/news/${article.id}`} scroll={true} prefetch={true}>
-          <Button variant="outline" className="w-full bg-transparent">
+        <Button variant="outline" className="w-full bg-transparent" asChild>
+          <Link href={`/news/${article.id}`} scroll={true} prefetch={true}>
             اقرأ المزيد
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </div>
     </Card>
   )

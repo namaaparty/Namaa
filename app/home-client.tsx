@@ -58,6 +58,7 @@ function AnimatedCounter({ end, duration = 2000 }: { end: number; duration?: num
 
 interface HomeClientProps {
   heroImage: string
+  heroVideo: string | null
   homeContent: string
   statistics: {
     total_members: number
@@ -69,20 +70,8 @@ interface HomeClientProps {
 
 const SPLASH_SEEN_KEY = "namaa-splash-seen"
 
-export default function HomeClient({ heroImage, homeContent, statistics }: HomeClientProps) {
-  const [showSplash, setShowSplash] = useState<boolean>(() => {
-    if (typeof window === "undefined") {
-      return true
-    }
-    return window.sessionStorage.getItem(SPLASH_SEEN_KEY) !== "true"
-  })
-
-  useEffect(() => {
-    console.log("[v0] HomeClient mounted")
-    console.log("[v0] showSplash:", showSplash)
-    console.log("[v0] statistics:", statistics)
-    console.log("[v0] homeContent:", homeContent)
-  }, [])
+export default function HomeClient({ heroImage, heroVideo, homeContent, statistics }: HomeClientProps) {
+  const [showSplash, setShowSplash] = useState<boolean>(false)
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -91,17 +80,16 @@ export default function HomeClient({ heroImage, homeContent, statistics }: HomeC
 
     const hasSeenSplash = window.sessionStorage.getItem(SPLASH_SEEN_KEY) === "true"
     if (hasSeenSplash) {
-      setShowSplash(false)
       return
     }
 
     setShowSplash(true)
 
+    // Auto-hide after 1.5s to prevent getting stuck
     const timer = window.setTimeout(() => {
-      console.log("[v0] Hiding splash screen")
       setShowSplash(false)
       window.sessionStorage.setItem(SPLASH_SEEN_KEY, "true")
-    }, 1800)
+    }, 1500)
 
     return () => clearTimeout(timer)
   }, [])
@@ -159,7 +147,16 @@ export default function HomeClient({ heroImage, homeContent, statistics }: HomeC
       <div className="h-20" />
 
         <section className="relative w-full h-[80vh] overflow-hidden">
-          {typeof heroImage === "string" && heroImage.startsWith("data:") ? (
+          {heroVideo ? (
+            <video
+              src={heroVideo}
+              className="absolute inset-0 w-full h-full object-cover"
+              autoPlay
+              loop
+              muted
+              playsInline
+            />
+          ) : typeof heroImage === "string" && heroImage.startsWith("data:") ? (
             <img
               src={heroImage || "/placeholder.svg"}
               alt="حزب نماء - نحو اقتصاد وطني قوي"

@@ -560,8 +560,6 @@ async function cleanupVisionSections() {
 
 export async function getAllSections(pageId: string) {
   try {
-    console.log("[v0] Fetching sections for page:", pageId)
-
     const { data, error } = await supabase
       .from("page_sections")
       .select("*")
@@ -574,7 +572,6 @@ export async function getAllSections(pageId: string) {
     }
 
     if (!data) {
-      console.log("[v0] No sections found for page:", pageId)
       return []
     }
 
@@ -596,7 +593,6 @@ export async function getPageContent(pageId: string): Promise<PageContent | null
     if (pageId === "vision") {
       await cleanupVisionSections()
     }
-    console.log("[v0] Fetching page content for:", pageId)
 
     const { data: pageData, error: pageError } = await supabase
       .from("page_content")
@@ -610,7 +606,6 @@ export async function getPageContent(pageId: string): Promise<PageContent | null
     }
 
     if (!pageData) {
-      console.log("[v0] No page data found for:", pageId)
       return getDefaultPageContent(pageId)
     }
 

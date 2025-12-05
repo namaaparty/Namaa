@@ -68,14 +68,15 @@ export default function StatementsClient({ statements, heroImage }: StatementsCl
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
             {currentStatements.map((statement) => (
-              <Link key={statement.id} href={`/statements/${statement.id}`}>
-                <Card className="overflow-hidden hover:shadow-lg transition-shadow h-full flex flex-col cursor-pointer">
-                  <div className="relative h-48">
+              <div key={statement.id}>
+                <Card className="overflow-hidden hover:shadow-lg transition-shadow h-full flex flex-col p-0 group">
+                  <div className="relative h-64 w-full overflow-hidden">
                     <Image
                       src={statement.image || "/placeholder.svg?height=192&width=384&query=بيان صحفي"}
                       alt={statement.title}
                       fill
-                      className="object-cover"
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                   </div>
                   <div className="p-6 flex-1 flex flex-col">
@@ -91,9 +92,14 @@ export default function StatementsClient({ statements, heroImage }: StatementsCl
                     </div>
                     <h3 className="text-xl font-bold mb-3">{statement.title}</h3>
                     <p className="text-muted-foreground mb-4 flex-1 line-clamp-3">{statement.content}</p>
+                    <Button variant="outline" className="w-full bg-transparent mt-auto" asChild>
+                      <Link href={`/statements/${statement.id}`}>
+                        اقرأ المزيد
+                      </Link>
+                    </Button>
                   </div>
                 </Card>
-              </Link>
+              </div>
             ))}
           </div>
 

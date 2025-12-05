@@ -90,17 +90,18 @@ export default function ActivitiesClient({ heroImage, activities }: ActivitiesCl
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
               {currentActivities.map((item, idx) => (
-                <Link key={item.id || idx} href={`/activities/${item.id}`} className="group">
-                  <Card className="overflow-hidden hover:shadow-xl transition-shadow cursor-pointer">
-                    <div className="relative aspect-[4/3] overflow-hidden">
+                <div key={item.id || idx} className="group">
+                  <Card className="overflow-hidden hover:shadow-xl transition-shadow p-0 h-full flex flex-col">
+                    <div className="relative aspect-[4/3] w-full">
                       <Image
                         src={item.src || "/placeholder.svg"}
                         alt={item.title}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       />
                     </div>
-                    <div className="p-6 space-y-3">
+                    <div className="p-6 space-y-3 flex flex-col">
                       {item.date && (
                         <div className="flex items-center gap-4 text-sm text-muted-foreground">
                           <div className="flex items-center gap-1.5">
@@ -114,16 +115,21 @@ export default function ActivitiesClient({ heroImage, activities }: ActivitiesCl
                         </div>
                       )}
                       <h3 className="text-xl font-bold">{item.title}</h3>
-                      <p className="text-muted-foreground leading-relaxed">{item.description}</p>
+                      <p className="text-muted-foreground leading-relaxed flex-1">{item.description}</p>
                       {item.location && (
                         <p className="text-sm text-muted-foreground/80 flex items-start gap-1.5">
                           <MapPin className="w-4 h-4 mt-0.5" />
                           {item.location}
                         </p>
                       )}
+                      <Button variant="outline" className="w-full bg-transparent mt-auto" asChild>
+                        <Link href={`/activities/${item.id}`}>
+                          اقرأ المزيد
+                        </Link>
+                      </Button>
                     </div>
                   </Card>
-                </Link>
+                </div>
               ))}
             </div>
 

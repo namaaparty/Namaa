@@ -143,7 +143,6 @@ export default function JoinApplicationsPage() {
       })
 
       const result = await response.json()
-      console.log("[join-admin] Update response:", result)
 
       if (!response.ok) {
         throw new Error(result.error || "فشل تحديث الحالة")

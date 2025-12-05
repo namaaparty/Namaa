@@ -2,7 +2,15 @@
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { LogIn, LogOut, Settings } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { LogIn, LogOut, Settings, User, ChevronDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
 import { useEffect, useMemo, useState } from "react"
@@ -133,39 +141,41 @@ export function LoginButton({
   if (userEmail) {
     const panelInfo = userRole ? rolePanelMap[userRole] : null
     return (
-      <div className={cn(fullWidth ? "w-full flex flex-col gap-2" : "flex flex-col gap-2")}>
-        {panelInfo && (
-          <Link href={panelInfo.href} className={cn(fullWidth && "w-full")}>
-            <Button
-              variant="secondary"
-              size={size}
-              className={cn("gap-2", fullWidth ? "w-full justify-start" : "", className)}
-              onClick={onClick}
-            >
-              <Settings className="w-4 h-4" />
-              <div className="text-right leading-tight">
-                <span>لوحة التحكم</span>
-                <span className="block text-xs text-muted-foreground">{panelInfo.label}</span>
-              </div>
-            </Button>
-          </Link>
-        )}
-        <Button
-          variant={variant}
-          size={size}
-          onClick={() => {
-            onClick?.()
-            handleLogout()
-          }}
-          className={cn("gap-2", fullWidth ? "w-full justify-start" : "", className)}
-        >
-          <LogOut className="w-4 h-4" />
-          <div className="text-right leading-tight">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant={variant}
+            size={size}
+            className={cn("gap-2", fullWidth ? "w-full" : "", className)}
+          >
+            <User className="w-4 h-4" />
+            <span className="text-sm">{userEmail.split("@")[0]}</span>
+            <ChevronDown className="w-3 h-3" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-56">
+          <DropdownMenuLabel className="text-sm text-muted-foreground">{userEmail}</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {panelInfo && (
+            <DropdownMenuItem asChild>
+              <Link href={panelInfo.href} className="flex items-center gap-2 cursor-pointer">
+                <Settings className="w-4 h-4" />
+                <span>{panelInfo.label}</span>
+              </Link>
+            </DropdownMenuItem>
+          )}
+          <DropdownMenuItem
+            onClick={() => {
+              onClick?.()
+              handleLogout()
+            }}
+            className="flex items-center gap-2 cursor-pointer text-red-600 focus:text-red-600"
+          >
+            <LogOut className="w-4 h-4" />
             <span>تسجيل الخروج</span>
-            <span className="block text-xs text-muted-foreground">{userEmail}</span>
-          </div>
-        </Button>
-      </div>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     )
   }
 

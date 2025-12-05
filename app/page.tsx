@@ -5,16 +5,20 @@ import HomeClient from "./home-client"
 async function fetchData() {
   const supabase = await createServerSupabase()
 
-  // Fetch hero image from database
+  // Fetch hero image and video from database
   let heroImage = "/images/hero-event.jpg"
+  let heroVideo = null
   try {
-    const { data } = await supabase.from("page_content").select("hero_image").eq("page_id", "home").maybeSingle()
+    const { data } = await supabase.from("page_content").select("hero_image, hero_video").eq("page_id", "home").maybeSingle()
 
     if (data?.hero_image) {
       heroImage = data.hero_image
     }
+    if (data?.hero_video) {
+      heroVideo = data.hero_video
+    }
   } catch (error) {
-    console.error("[v0] Error fetching hero image:", error)
+    console.error("[v0] Error fetching hero media:", error)
   }
 
   // Fetch about content
@@ -36,11 +40,11 @@ async function fetchData() {
   // Fetch party statistics
   const stats = await getPartyStatistics()
 
-  return { heroImage, aboutContent, stats }
+  return { heroImage, heroVideo, aboutContent, stats }
 }
 
 export default async function Home() {
-  const { heroImage, aboutContent, stats } = await fetchData()
+  const { heroImage, heroVideo, aboutContent, stats } = await fetchData()
 
-  return <HomeClient heroImage={heroImage} homeContent={aboutContent} statistics={stats} />
+  return <HomeClient heroImage={heroImage} heroVideo={heroVideo} homeContent={aboutContent} statistics={stats} />
 }

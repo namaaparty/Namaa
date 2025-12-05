@@ -106,8 +106,14 @@ export default function ActivityDetailPage() {
         <article className="max-w-3xl mx-auto mb-12">
           {/* Hero Image */}
           {activity.image && (
-            <div className="relative h-96 w-full rounded-lg overflow-hidden mb-8 bg-muted">
-              <Image src={activity.image || "/placeholder.svg"} alt={activity.title} fill className="object-contain" />
+            <div className="relative h-96 w-full rounded-lg overflow-hidden mb-8">
+              <Image 
+                src={activity.image || "/placeholder.svg"} 
+                alt={activity.title} 
+                fill 
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 896px"
+              />
             </div>
           )}
 

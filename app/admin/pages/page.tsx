@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation"
 import { useToast } from "@/components/ui/use-toast"
 import { useAdminAccess } from "@/hooks/use-admin-access"
 import { ConfirmDialog } from "@/components/confirm-dialog"
+import { createClient } from "@/lib/supabase/client"
 
 import type React from "react"
 import {
@@ -106,6 +107,8 @@ export default function AdminPagesPage() {
   const [showAddSection, setShowAddSection] = useState(false)
   const [showAddLeader, setShowAddLeader] = useState(false)
   const [heroImageFile, setHeroImageFile] = useState<File | null>(null)
+  const [heroVideoFile, setHeroVideoFile] = useState<File | null>(null)
+  const [heroVideoUrl, setHeroVideoUrl] = useState<string>("")
   const [sectionImageFile, setSectionImageFile] = useState<File | null>(null)
   const [branchForm, setBranchForm] = useState({
     title: "",
@@ -874,6 +877,73 @@ export default function AdminPagesPage() {
     }
   }
 
+  const handleVideoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      if (file.size > 50 * 1024 * 1024) {
+        toast({
+          variant: "destructive",
+          title: "الملف كبير جداً",
+          description: "حجم الفيديو يجب أن يكون أقل من 50 ميجابايت",
+        })
+        return
+      }
+      setHeroVideoFile(file)
+      setHeroVideoUrl(URL.createObjectURL(file))
+    }
+  }
+
+  const handleSaveHeroVideo = async () => {
+    if (!selectedPage || !heroVideoFile || selectedPage.id !== "home") return
+
+    try {
+      setIsSaving(true)
+      const supabase = createClient()
+      const fileName = `hero-video-${Date.now()}.mp4`
+
+      const { error: uploadError } = await supabase.storage.from("videos").upload(fileName, heroVideoFile, {
+        upsert: true,
+      })
+
+      if (uploadError) {
+        console.error("[home-video] Upload error:", uploadError)
+        throw new Error("فشل رفع الفيديو")
+      }
+
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("videos").getPublicUrl(fileName)
+
+      const { error: updateError } = await supabase
+        .from("page_content")
+        .update({ hero_video: publicUrl })
+        .eq("page_id", "home")
+
+      if (updateError) {
+        console.error("[home-video] Update error:", updateError)
+        throw new Error("فشل حفظ رابط الفيديو")
+      }
+
+      toast({
+        title: "تم الحفظ",
+        description: "تم رفع فيديو الخلفية بنجاح",
+      })
+
+      setHeroVideoFile(null)
+      setHeroVideoUrl("")
+      await loadPages()
+    } catch (error) {
+      console.error("[home-video] Error:", error)
+      toast({
+        variant: "destructive",
+        title: "خطأ",
+        description: error instanceof Error ? error.message : "فشل رفع الفيديو",
+      })
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
   const resizeAndCompressImage = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader()
@@ -1298,6 +1368,41 @@ export default function AdminPagesPage() {
                 </Button>
               </div>
             </div>
+
+            {selectedPage.id === "home" && (
+              <Card className="p-6 mb-6">
+                <h2 className="text-xl font-bold mb-4">فيديو الخلفية (Hero Video)</h2>
+                <p className="text-sm text-muted-foreground mb-4">
+                  يمكنك رفع فيديو mp4 ليتم تشغيله تلقائياً في خلفية الصفحة الرئيسية (بدلاً من الصورة). الحد الأقصى: 50 ميجابايت.
+                </p>
+                <div className="space-y-4">
+                  <div>
+                    <Label className="block text-sm font-medium text-gray-700 mb-2">اختر ملف الفيديو (MP4)</Label>
+                    <Input
+                      type="file"
+                      accept="video/mp4"
+                      onChange={handleVideoFileChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    />
+                  </div>
+                  {heroVideoUrl && (
+                    <div className="relative w-full h-64 border rounded-lg overflow-hidden bg-black">
+                      <video
+                        src={heroVideoUrl}
+                        className="w-full h-full object-cover"
+                        controls
+                        muted
+                      />
+                    </div>
+                  )}
+                  {heroVideoFile && (
+                    <Button onClick={handleSaveHeroVideo} className="gap-2" disabled={isSaving}>
+                      {isSaving ? "جاري الرفع..." : "حفظ الفيديو"}
+                    </Button>
+                  )}
+                </div>
+              </Card>
+            )}
 
             {selectedPage.id === "vision" && (
               <Card className="p-6 mb-8 space-y-6">
