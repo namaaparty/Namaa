@@ -482,12 +482,10 @@ export default function JoinApplicationsPage() {
                     <span className="text-muted-foreground">اللواء:</span>
                     <p className="font-semibold">{selectedApplication.district}</p>
                   </div>
-                  {selectedApplication.address && (
-                    <div className="md:col-span-2">
-                      <span className="text-muted-foreground">العنوان:</span>
-                      <p className="font-semibold">{selectedApplication.address}</p>
-                    </div>
-                  )}
+                  <div className="md:col-span-2">
+                    <span className="text-muted-foreground">العنوان:</span>
+                    <p className="font-semibold">{selectedApplication.address || "غير متوفر"}</p>
+                  </div>
                 </div>
               </div>
 

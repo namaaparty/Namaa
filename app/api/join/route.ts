@@ -150,7 +150,7 @@ export async function POST(request: NextRequest) {
               <strong>تاريخ التقديم:</strong> ${new Date().toLocaleDateString("en-GB")}
             </div>
             <p>يرجى مراجعة الطلب في لوحة الإدارة.</p>
-            <a href="https://namaaparty.com/admin/join-applications" style="display:inline-block;background:#10b981;color:white;padding:12px 24px;text-decoration:none;border-radius:6px;margin-top:15px;">مراجعة الطلب</a>
+            <a href="https://namaaa.netlify.app/admin/join-applications" style="display:inline-block;background:#10b981;color:white;padding:12px 24px;text-decoration:none;border-radius:6px;margin-top:15px;">مراجعة الطلب</a>
           </div>
         </body>
         </html>

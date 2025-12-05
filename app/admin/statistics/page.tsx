@@ -164,7 +164,7 @@ export default function StatisticsAdmin() {
             {stats && (
               <div className="p-4 bg-muted rounded-lg">
                 <p className="text-sm text-muted-foreground">
-                  آخر تحديث: {new Date(stats.last_updated).toLocaleString("ar-EG")}
+                  آخر تحديث: {new Date(stats.last_updated).toLocaleDateString("en-GB")} {new Date(stats.last_updated).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}
                 </p>
               </div>
             )}
