@@ -6,6 +6,8 @@ export interface PageSection {
   content: string
   image?: string
   order: number
+  phone?: string
+  address?: string
 }
 
 export interface Leader {
@@ -581,6 +583,8 @@ export async function getAllSections(pageId: string) {
       content: s.content,
       image: s.image,
       order_number: s.order_number,
+      phone: s.phone,
+      address: s.address,
     }))
   } catch (error) {
     console.error("[v0] Error in getAllSections:", error)
@@ -632,6 +636,8 @@ export async function getPageContent(pageId: string): Promise<PageContent | null
         content: s.content,
         image: s.image,
         order: s.order_number,
+        phone: s.phone,
+        address: s.address,
       })) || []
 
     const leaders: Leader[] =
@@ -689,6 +695,8 @@ export async function getAllPages(): Promise<PageContent[]> {
           content: s.content,
           image: s.image,
           order: s.order_number,
+          phone: s.phone,
+          address: s.address,
         }))
 
       const pageLeaders =
@@ -786,8 +794,32 @@ export async function updateSection(pageId: string, sectionId: string, updates: 
     if (updates.content !== undefined) dbUpdates.content = updates.content
     if (updates.image !== undefined) dbUpdates.image = updates.image
     if (updates.order !== undefined) dbUpdates.order_number = updates.order
+    if ((updates as any).phone !== undefined) dbUpdates.phone = (updates as any).phone
+    if ((updates as any).address !== undefined) dbUpdates.address = (updates as any).address
 
-    const { error } = await supabase.from("page_sections").update(dbUpdates).eq("id", sectionId).eq("page_id", pageId)
+    console.log("[pages-storage] Updating section with:", dbUpdates)
+    console.log("[pages-storage] Section ID:", sectionId, "Page ID:", pageId)
+
+    const { data, error, status, statusText } = await supabase
+      .from("page_sections")
+      .update(dbUpdates)
+      .eq("id", sectionId)
+      .eq("page_id", pageId)
+      .select()
+
+    console.log("[pages-storage] Update response:", { data, error, status, statusText })
+
+    if (error) {
+      console.error("[pages-storage] Database error:", JSON.stringify(error, null, 2))
+      throw error
+    }
+    
+    if (!data || data.length === 0) {
+      console.error("[pages-storage] No rows updated! Section might not exist or RLS blocked it")
+      throw new Error("No rows were updated")
+    }
+    
+    console.log("[pages-storage] Section updated successfully, new data:", data)
 
     if (error) {
       console.error("[v0] Error updating section in Supabase:", error)

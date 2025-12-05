@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { Home, Pencil, Trash2, Save, ArrowRight, X, FileText, LogOut, Lock, Plus } from "lucide-react"
+import { Home, Pencil, Trash2, Save, ArrowRight, X, FileText, LogOut, Lock, Plus, ArrowUp, ArrowDown } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/components/ui/use-toast"
 import { useAdminAccess } from "@/hooks/use-admin-access"
@@ -132,6 +132,8 @@ export default function AdminPagesPage() {
     title: "",
     content: "",
     image: "",
+    phone: "",
+    address: "",
   })
   const [leaderFormData, setLeaderFormData] = useState({
     name: "",
@@ -278,7 +280,7 @@ export default function AdminPagesPage() {
       })
 
       const filteredPages = sortedPages.filter(
-        (page) => page.id !== "activities" && page.id !== "goals" && page.id !== "constitution" && page.id !== "news",
+        (page) => page.id !== "activities" && page.id !== "goals" && page.id !== "constitution" && page.id !== "news" && page.id !== "statements",
       )
 
       setPageContents(filteredPages)
@@ -472,11 +474,19 @@ export default function AdminPagesPage() {
   }
 
   const handleEditSection = (section: PageSection) => {
+    console.log("[edit-section] Loading section for edit:", section)
+    console.log("[edit-section] Phone:", section.phone, "Address:", section.address)
     setEditingSection(section)
     setFormData({
       title: section.title,
       content: section.content,
       image: section.image || "",
+      phone: section.phone || "",
+      address: section.address || "",
+    })
+    console.log("[edit-section] FormData set to:", {
+      phone: section.phone || "",
+      address: section.address || "",
     })
   }
 
@@ -541,18 +551,28 @@ export default function AdminPagesPage() {
     if (selectedPage && editingSection) {
       try {
         console.log("[v0] Saving section:", editingSection.id, "for page:", selectedPage.id)
+        console.log("[v0] FormData being saved:", formData)
 
         await updateSection(selectedPage.id, editingSection.id, {
           title: formData.title,
           content: formData.content,
           image: formData.image || undefined,
+          phone: formData.phone || undefined,
+          address: formData.address || undefined,
         })
 
         console.log("[v0] Section updated successfully")
 
         const updatedSections = selectedPage.sections.map((s) =>
           s.id === editingSection.id
-            ? { ...s, title: formData.title, content: formData.content, image: formData.image || "" }
+            ? { 
+                ...s, 
+                title: formData.title, 
+                content: formData.content, 
+                image: formData.image || "",
+                phone: formData.phone || "",
+                address: formData.address || "",
+              }
             : s,
         )
 
@@ -564,7 +584,7 @@ export default function AdminPagesPage() {
         setPageContents(pageContents.map((p) => (p.id === selectedPage.id ? { ...p, sections: updatedSections } : p)))
 
         setEditingSection(null)
-        setFormData({ title: "", content: "", image: "" })
+        setFormData({ title: "", content: "", image: "", phone: "", address: "" })
 
         const updatedPages = await loadPages()
         const refreshedPage = updatedPages.find((p) => p.id === selectedPage.id)
@@ -644,7 +664,59 @@ export default function AdminPagesPage() {
 
   const handleCancel = () => {
     setEditingSection(null)
-    setFormData({ title: "", content: "", image: "" })
+    setFormData({ title: "", content: "", image: "", phone: "", address: "" })
+  }
+
+  const handleMoveSectionUp = async (section: PageSection) => {
+    if (!selectedPage) return
+    
+    const sections = [...selectedPage.sections].sort((a, b) => a.order - b.order)
+    const index = sections.findIndex(s => s.id === section.id)
+    
+    if (index <= 0) return // Already first
+    
+    const prevSection = sections[index - 1]
+    
+    try {
+      // Swap order numbers
+      await updateSection(selectedPage.id, section.id, { order: prevSection.order })
+      await updateSection(selectedPage.id, prevSection.id, { order: section.order })
+      
+      await loadPages()
+      const updated = (await getAllPages()).find(p => p.id === selectedPage.id)
+      if (updated) setSelectedPage(updated)
+      
+      toast({ title: "تم تحريك الفرع للأعلى" })
+    } catch (error) {
+      console.error("Error moving section:", error)
+      toast({ variant: "destructive", title: "فشل تحريك الفرع" })
+    }
+  }
+
+  const handleMoveSectionDown = async (section: PageSection) => {
+    if (!selectedPage) return
+    
+    const sections = [...selectedPage.sections].sort((a, b) => a.order - b.order)
+    const index = sections.findIndex(s => s.id === section.id)
+    
+    if (index >= sections.length - 1) return // Already last
+    
+    const nextSection = sections[index + 1]
+    
+    try {
+      // Swap order numbers
+      await updateSection(selectedPage.id, section.id, { order: nextSection.order })
+      await updateSection(selectedPage.id, nextSection.id, { order: section.order })
+      
+      await loadPages()
+      const updated = (await getAllPages()).find(p => p.id === selectedPage.id)
+      if (updated) setSelectedPage(updated)
+      
+      toast({ title: "تم تحريك الفرع للأسفل" })
+    } catch (error) {
+      console.error("Error moving section:", error)
+      toast({ variant: "destructive", title: "فشل تحريك الفرع" })
+    }
   }
 
   const handleBack = () => {
@@ -1167,14 +1239,18 @@ export default function AdminPagesPage() {
         ) : editingSection ? (
           <Card className="p-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold">تعديل القسم</h2>
+              <h2 className="text-2xl font-bold">
+                {selectedPage?.id === "branches" ? "تعديل فرع" : "تعديل القسم"}
+              </h2>
               <Button variant="ghost" onClick={handleCancel} size="sm">
                 <X size={20} />
               </Button>
             </div>
             <div className="space-y-4">
               <div>
-                <Label className="block text-sm font-medium text-gray-700 mb-2">عنوان القسم</Label>
+                <Label className="block text-sm font-medium text-gray-700 mb-2">
+                  {selectedPage?.id === "branches" ? "اسم الفرع" : "عنوان القسم"}
+                </Label>
                 <Input
                   type="text"
                   value={formData.title}
@@ -1183,14 +1259,39 @@ export default function AdminPagesPage() {
                 />
               </div>
 
-              <div>
-                <Label className="block text-sm font-medium text-gray-700 mb-2">المحتوى</Label>
-                <Textarea
-                  value={formData.content}
-                  onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent h-64"
-                />
-              </div>
+              {selectedPage?.id === "branches" ? (
+                <>
+                  <div>
+                    <Label className="block text-sm font-medium text-gray-700 mb-2">العنوان الكامل</Label>
+                    <Textarea
+                      value={formData.address}
+                      onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent h-32"
+                      placeholder="عمان - المقر الرئيسي - شارع أم السماق"
+                    />
+                  </div>
+                  <div>
+                    <Label className="block text-sm font-medium text-gray-700 mb-2">رقم الهاتف</Label>
+                    <Input
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                      placeholder="0770449644"
+                      maxLength={10}
+                    />
+                  </div>
+                </>
+              ) : (
+                <div>
+                  <Label className="block text-sm font-medium text-gray-700 mb-2">المحتوى</Label>
+                  <Textarea
+                    value={formData.content}
+                    onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent h-64"
+                  />
+                </div>
+              )}
 
               <div>
                 <Label className="block text-sm font-medium text-gray-700 mb-2">صورة (اختياري)</Label>
@@ -2102,7 +2203,24 @@ export default function AdminPagesPage() {
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <h3 className="text-xl font-bold text-gray-900 mb-2">{section.title}</h3>
-                          <p className="text-gray-600 mb-3 whitespace-pre-wrap">{section.content}</p>
+                          {selectedPage.id === "branches" && (section.phone || section.address) ? (
+                            <div className="space-y-2 text-gray-600 mb-3">
+                              {section.address && (
+                                <p className="flex items-start gap-2">
+                                  <span className="font-semibold min-w-[60px]">العنوان:</span>
+                                  <span>{section.address}</span>
+                                </p>
+                              )}
+                              {section.phone && (
+                                <p className="flex items-start gap-2">
+                                  <span className="font-semibold min-w-[60px]">الهاتف:</span>
+                                  <span>{section.phone}</span>
+                                </p>
+                              )}
+                            </div>
+                          ) : (
+                            <p className="text-gray-600 mb-3 whitespace-pre-wrap">{section.content}</p>
+                          )}
                           {section.image && (
                             <div className="mt-3">
                               <Home size={16} className="inline mr-2" />
@@ -2111,6 +2229,28 @@ export default function AdminPagesPage() {
                           )}
                         </div>
                         <div className="flex gap-2 mr-4">
+                          {selectedPage.id === "branches" && (
+                            <>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleMoveSectionUp(section)}
+                                className="gap-1"
+                                title="تحريك للأعلى"
+                              >
+                                <ArrowUp size={16} />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleMoveSectionDown(section)}
+                                className="gap-1"
+                                title="تحريك للأسفل"
+                              >
+                                <ArrowDown size={16} />
+                              </Button>
+                            </>
+                          )}
                           <Button
                             size="sm"
                             variant="outline"

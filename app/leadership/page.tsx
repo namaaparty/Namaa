@@ -12,6 +12,7 @@ interface Leader {
   id: string
   name: string
   position: string
+  bio?: string
   is_main: boolean
   image: string | null
   order_number: number
@@ -172,8 +173,11 @@ export default async function LeadershipPage() {
                             </div>
                             <CardTitle className="text-center text-xl">{leader.name}</CardTitle>
                           </CardHeader>
-                          <CardContent>
+                          <CardContent className="space-y-3">
                             <p className="text-center text-primary font-bold text-lg">{leader.position}</p>
+                            {leader.bio && (
+                              <p className="text-center text-muted-foreground text-sm leading-relaxed">{leader.bio}</p>
+                            )}
                           </CardContent>
                         </Card>
                       </div>
@@ -205,6 +209,9 @@ export default async function LeadershipPage() {
                               <p className="text-muted-foreground text-sm">{leader.position}</p>
                             </div>
                           </div>
+                          {leader.bio && (
+                            <p className="text-muted-foreground text-sm leading-relaxed mt-3">{leader.bio}</p>
+                          )}
                         </CardContent>
                       </Card>
                     </div>

@@ -57,15 +57,10 @@ export default function BranchesClient({ branches, heroImage }: BranchesClientPr
         <section className="py-12 lg:py-16">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {branches.map((branch) => {
-                const parts = branch.content.split("|").map((p) => p.trim())
-                const address = parts[0] || branch.content
-                const phone =
-                  parts
-                    .find((p) => p.includes("هاتف"))
-                    ?.replace("هاتف:", "")
-                    .trim() || "0777884444"
-                const coordinates = parts.find((p) => p.includes("°"))
+              {branches.map((branch: any) => {
+                // Use dedicated fields if available, otherwise parse from content
+                const address = branch.address || branch.content.split("|")[0]?.trim() || branch.content
+                const phone = branch.phone || "0770449644"
 
                 return (
                   <Card key={branch.id} className="h-full hover:shadow-lg transition-all border-2 hover:border-primary/50">
@@ -78,14 +73,15 @@ export default function BranchesClient({ branches, heroImage }: BranchesClientPr
                         <CardTitle className="text-center text-xl">{branch.title}</CardTitle>
                       </CardHeader>
                       <CardContent className="space-y-3">
-                        <div className="flex items-center gap-2 text-muted-foreground">
-                          <MapPin className="w-4 h-4 flex-shrink-0" />
-                          <p className="text-sm">{address}</p>
+                        <div className="flex items-start gap-2 text-muted-foreground">
+                          <MapPin className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                          <p className="text-sm leading-relaxed">{address}</p>
                         </div>
-                        {coordinates && <p className="text-xs text-muted-foreground mr-6">{coordinates}</p>}
                         <div className="flex items-center gap-2 text-muted-foreground">
                           <Phone className="w-4 h-4 flex-shrink-0" />
-                          <p className="text-sm">{phone}</p>
+                          <a href={`tel:+962${phone.replace(/^0/, '')}`} className="text-sm hover:text-primary transition-colors">
+                            {phone}
+                          </a>
                         </div>
                       </CardContent>
                   </Card>

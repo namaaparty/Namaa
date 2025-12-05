@@ -288,23 +288,29 @@ export default function AdminActivitiesPage() {
     }
 
     try {
-      // جلب الصورة القديمة
+      // جلب الصورة القديمة (ignore errors if row doesn't exist)
       const { data: pageData } = await supabase
         .from("page_content")
         .select("hero_image")
         .eq("page_id", "activities")
-        .single()
+        .maybeSingle()
 
       // حذف الصورة القديمة من Storage إن وجدت
       if (pageData?.hero_image && pageData.hero_image.includes("supabase.co/storage")) {
-        await deleteImageFromStorage(pageData.hero_image)
+        await deleteImageFromStorage(pageData.hero_image).catch(() => {}) // Ignore delete errors
       }
 
       // رفع الصورة الجديدة إلى Supabase Storage
       const imageUrl = await uploadImageToStorage(heroImageData.file, "activities")
 
-      // تحديث قاعدة البيانات برابط الصورة الجديدة
-      const { error } = await supabase.from("page_content").update({ hero_image: imageUrl }).eq("page_id", "activities")
+      // تحديث قاعدة البيانات برابط الصورة الجديدة (upsert if row doesn't exist)
+      const { error } = await supabase
+        .from("page_content")
+        .upsert({ 
+          page_id: "activities", 
+          page_title: "نشاطات الحزب",
+          hero_image: imageUrl 
+        }, { onConflict: "page_id" })
 
       if (error) {
         console.error("Error updating hero image:", error)
