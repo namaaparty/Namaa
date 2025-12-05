@@ -7,10 +7,10 @@ import { SiteNavbar } from "@/components/site-navbar"
 import { SiteFooter } from "@/components/site-footer"
 
 interface Section {
-  id: string
+  id?: string
   title: string
   content: string
-  order_number: number
+  order_number?: number
 }
 
 const FALLBACKS = {
