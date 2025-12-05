@@ -46,7 +46,7 @@ export default function StatementsClient({ statements, heroImage }: StatementsCl
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60" />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="max-w-4xl mx-auto px-6 text-center">
-              <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6 drop-shadow-lg">البيانات الصادرة</h1>
+              <h1 className="text-5xl lg:text-6xl font-black text-white mb-6 drop-shadow-2xl" style={{ textShadow: '0 4px 12px rgba(0,0,0,0.6), 0 2px 4px rgba(0,0,0,0.4)' }}>البيانات الصادرة</h1>
               <p className="text-xl lg:text-2xl text-white/95 drop-shadow-lg">
                 مواقف وبيانات حزب نماء حول القضايا الوطنية
               </p>

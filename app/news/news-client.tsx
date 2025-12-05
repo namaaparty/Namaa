@@ -63,7 +63,7 @@ export default function NewsClientPage({ articles, heroImage }: NewsClientPagePr
 
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="max-w-4xl mx-auto px-6 text-center">
-            <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6 drop-shadow-lg">أخبار الحزب</h1>
+            <h1 className="text-5xl lg:text-6xl font-black text-white mb-6 drop-shadow-2xl" style={{ textShadow: '0 4px 12px rgba(0,0,0,0.6), 0 2px 4px rgba(0,0,0,0.4)' }}>أخبار الحزب</h1>
             <p className="text-xl lg:text-2xl text-white/95 drop-shadow-lg">تابع أحدث أخبار وفعاليات حزب نماء</p>
           </div>
         </div>

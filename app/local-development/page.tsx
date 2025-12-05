@@ -49,7 +49,7 @@ export default async function LocalDevelopmentPage() {
         {/* Hero Content */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="max-w-4xl mx-auto px-6 text-center">
-            <div className="text-5xl lg:text-6xl font-bold text-white mb-6 drop-shadow-lg">البرنامج الاقتصادي</div>
+            <div className="text-5xl lg:text-6xl font-black text-white mb-6 drop-shadow-2xl" style={{ textShadow: '0 4px 12px rgba(0,0,0,0.6), 0 2px 4px rgba(0,0,0,0.4)' }}>البرنامج الاقتصادي</div>
             <div className="text-xl lg:text-2xl text-white/95 drop-shadow-lg">
               نحو تنمية مستدامة وازدهار اقتصادي شامل
             </div>
