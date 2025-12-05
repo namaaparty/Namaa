@@ -12,6 +12,23 @@ export async function POST(request: NextRequest) {
       return value && value.trim() !== "" ? value : null
     }
 
+    // Check for duplicate national_id
+    const nationalId = formData.get("nationalId") as string
+    if (nationalId) {
+      const { data: existing } = await supabase
+        .from("join_applications")
+        .select("id")
+        .eq("national_id", nationalId)
+        .maybeSingle()
+
+      if (existing) {
+        return NextResponse.json(
+          { error: "تم تقديم طلب سابق بنفس الرقم الوطني. يرجى الانتظار حتى تتم مراجعة طلبك السابق." },
+          { status: 400 },
+        )
+      }
+    }
+
     // Extract form fields
     const applicationData = {
       national_id: formData.get("nationalId") as string,

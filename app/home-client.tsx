@@ -144,7 +144,6 @@ export default function HomeClient({ heroImage, heroVideo, homeContent, statisti
       )}
 
       <SiteNavbar />
-      <div className="h-20" />
 
         <section className="relative w-full h-[80vh] overflow-hidden">
           {heroVideo ? (

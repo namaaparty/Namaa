@@ -16,13 +16,24 @@ import { CheckCircle2, ArrowRight, ArrowLeft } from "lucide-react"
 import { UploadIcon, CheckCircleIcon, AlertCircle, X } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import { SiteNavbar } from "@/components/site-navbar"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { useRouter } from "next/navigation"
 
 export default function JoinPage() {
+  const router = useRouter()
   const [currentStep, setCurrentStep] = useState(1)
   const [acceptedTerms, setAcceptedTerms] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle")
   const [applicationNumber, setApplicationNumber] = useState<string>("")
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false)
+  const [fieldErrors, setFieldErrors] = useState<Record<string, boolean>>({})
 
   const [formData, setFormData] = useState({
     // البيانات الشخصية
@@ -113,12 +124,50 @@ export default function JoinPage() {
     setSubmitStatus("idle")
 
     try {
-      // Validate required fields
-      if (!formData.nationalId || !formData.phone || !formData.fullName) {
+      // Validate required fields and set errors
+      const errors: Record<string, boolean> = {}
+      
+      if (!formData.nationalId || formData.nationalId.trim() === "") {
+        errors.nationalId = true
+      }
+      if (!formData.phone || formData.phone.trim() === "") {
+        errors.phone = true
+      }
+      if (!formData.fullName || formData.fullName.trim() === "") {
+        errors.fullName = true
+      }
+      if (!formData.title) {
+        errors.title = true
+      }
+      if (!formData.birthDate) {
+        errors.birthDate = true
+      }
+      if (!formData.gender) {
+        errors.gender = true
+      }
+      if (!formData.maritalStatus) {
+        errors.maritalStatus = true
+      }
+      if (!formData.idExpiry) {
+        errors.idExpiry = true
+      }
+      if (!formData.governorate) {
+        errors.governorate = true
+      }
+      if (!formData.district) {
+        errors.district = true
+      }
+      if (!formData.qualification) {
+        errors.qualification = true
+      }
+      
+      setFieldErrors(errors)
+      
+      if (Object.keys(errors).length > 0) {
         toast({
           variant: "destructive",
           title: "تنبيه",
-          description: "يرجى تعبئة جميع الحقول الإلزامية (الرقم الوطني، الهاتف، الاسم)",
+          description: "يرجى تعبئة جميع الحقول الإلزامية المطلوبة",
         })
         setIsSubmitting(false)
         return
@@ -154,11 +203,12 @@ export default function JoinPage() {
       const appNumber = result.applicationNumber || "غير متوفر"
       setApplicationNumber(appNumber)
       setSubmitStatus("success")
-      toast({
-        title: "✅ تم إرسال طلبك بنجاح",
-        description: `رقم طلبك: ${appNumber}\nيرجى مراجعة بريدك الإلكتروني للحصول على تفاصيل الطلب والتحديثات.`,
-        duration: 8000,
-      })
+      setShowSuccessDialog(true)
+      
+      // Auto-redirect to home after 5 seconds
+      setTimeout(() => {
+        router.push("/")
+      }, 5000)
     } catch (error) {
       console.error("[join] Submission error:", error)
       setSubmitStatus("error")
@@ -337,14 +387,20 @@ export default function JoinPage() {
                           <Label htmlFor="nationalId" className="required">
                             الرقم الوطني *
                           </Label>
+                          {fieldErrors.nationalId && (
+                            <p className="text-xs text-red-600 bg-red-50 px-2 py-1 rounded">هذا الحقل مطلوب</p>
+                          )}
                           <Input
                             id="nationalId"
-                            placeholder="أدخل الرقم الوطني"
+                            placeholder="أدخل الرقم الوطني (10 أرقام)"
                             maxLength={10}
                             required
-                            className="text-right"
+                            className={`text-right ${fieldErrors.nationalId ? "border-red-500" : ""}`}
                             value={formData.nationalId}
-                            onChange={(e) => setFormData({ ...formData, nationalId: e.target.value })}
+                            onChange={(e) => {
+                              setFormData({ ...formData, nationalId: e.target.value })
+                              setFieldErrors({ ...fieldErrors, nationalId: false })
+                            }}
                           />
                         </div>
 
@@ -352,15 +408,21 @@ export default function JoinPage() {
                           <Label htmlFor="phone" className="required">
                             رقم الهاتف *
                           </Label>
+                          {fieldErrors.phone && (
+                            <p className="text-xs text-red-600 bg-red-50 px-2 py-1 rounded">هذا الحقل مطلوب</p>
+                          )}
                           <Input
                             id="phone"
                             type="tel"
                             placeholder="07XXXXXXXX"
                             maxLength={10}
                             required
-                            className="text-right"
+                            className={`text-right ${fieldErrors.phone ? "border-red-500" : ""}`}
                             value={formData.phone}
-                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                            onChange={(e) => {
+                              setFormData({ ...formData, phone: e.target.value })
+                              setFieldErrors({ ...fieldErrors, phone: false })
+                            }}
                           />
                         </div>
 
@@ -391,13 +453,19 @@ export default function JoinPage() {
                           <Label htmlFor="fullName" className="required">
                             الاسم الرباعي *
                           </Label>
+                          {fieldErrors.fullName && (
+                            <p className="text-xs text-red-600 bg-red-50 px-2 py-1 rounded">هذا الحقل مطلوب</p>
+                          )}
                           <Input
                             id="fullName"
                             placeholder="الاسم الكامل"
                             required
-                            className="text-right"
+                            className={`text-right ${fieldErrors.fullName ? "border-red-500" : ""}`}
                             value={formData.fullName}
-                            onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                            onChange={(e) => {
+                              setFormData({ ...formData, fullName: e.target.value })
+                              setFieldErrors({ ...fieldErrors, fullName: false })
+                            }}
                           />
                         </div>
 
@@ -1095,18 +1163,50 @@ export default function JoinPage() {
             <div className="mt-8 text-center">
               <p className="text-muted-foreground mb-2">هل تواجه مشكلة في تقديم الطلب؟</p>
               <div className="flex items-center justify-center gap-4 text-sm">
-                <a href="tel:0791234567" className="text-primary hover:underline">
+                <a href="tel:0770449644" className="text-primary hover:underline">
                   {"اتصل بنا: 0770449644"}
                 </a>
                 <span className="text-muted-foreground">|</span>
-                <a href="mailto:info@namaaparty.jo" className="text-primary hover:underline">
-                  info@namaaparty.jo
+                <a href="mailto:info@namaaparty.com" className="text-primary hover:underline">
+                  info@namaaparty.com
                 </a>
               </div>
             </div>
           </main>
         </div>
       </div>
+
+      {/* Success Dialog */}
+      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
+              <CheckCircleIcon className="h-10 w-10 text-green-600" />
+            </div>
+            <DialogTitle className="text-center text-2xl">تم إرسال طلبك بنجاح!</DialogTitle>
+            <DialogDescription className="text-center space-y-4 pt-4">
+              <div className="bg-green-50 border-2 border-green-200 rounded-lg p-6">
+                <p className="text-sm text-green-700 mb-2">رقم طلبك</p>
+                <p className="text-3xl font-bold text-green-900">{applicationNumber}</p>
+                <p className="text-xs text-green-600 mt-2">احتفظ بهذا الرقم للمتابعة</p>
+              </div>
+              <p className="text-base text-gray-700">
+                ✉️ تم إرسال رسالة تأكيد إلى بريدك الإلكتروني<br />
+                سيتم مراجعة طلبك والرد عليك خلال 3-7 أيام
+              </p>
+              <p className="text-sm text-muted-foreground">سيتم نقلك للصفحة الرئيسية خلال لحظات...</p>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-center mt-4">
+            <Button
+              onClick={() => router.push("/")}
+              className="w-full sm:w-auto px-8"
+            >
+              حسناً، العودة للصفحة الرئيسية
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
