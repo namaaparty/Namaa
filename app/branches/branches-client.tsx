@@ -68,12 +68,8 @@ export default function BranchesClient({ branches, heroImage }: BranchesClientPr
                 const coordinates = parts.find((p) => p.includes("°"))
 
                 return (
-                  <div
-                    key={branch.id}
-                    className="h-full hover:shadow-lg transition-all border-2 hover:border-primary/50"
-                  >
-                    <Card className="h-full hover:shadow-lg transition-all border-2 hover:border-primary/50">
-                      <CardHeader>
+                  <Card key={branch.id} className="h-full hover:shadow-lg transition-all border-2 hover:border-primary/50">
+                    <CardHeader>
                         <div className="flex justify-center mb-4">
                           <div className="p-4 rounded-full bg-primary/10">
                             <MapPin className="w-8 h-8 text-primary" />
@@ -92,8 +88,7 @@ export default function BranchesClient({ branches, heroImage }: BranchesClientPr
                           <p className="text-sm">{phone}</p>
                         </div>
                       </CardContent>
-                    </Card>
-                  </div>
+                  </Card>
                 )
               })}
             </div>
