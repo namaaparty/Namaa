@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
 
       if (uploadError) {
         console.error(`[join] Error uploading ${prefix}:`, JSON.stringify(uploadError, null, 2))
-        throw new Error(`فشل رفع ${prefix}: ${uploadError.message || uploadError.error || "unknown"}`)
+        throw new Error(`فشل رفع ${prefix}: ${uploadError.message || "unknown"}`)
       }
 
       const {
