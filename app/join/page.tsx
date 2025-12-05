@@ -84,11 +84,21 @@ export default function JoinPage() {
     }
 
     const timeoutId = setTimeout(async () => {
+      console.log("[national-id-check] Checking ID:", formData.nationalId)
       setCheckingNationalId(true)
       try {
         const response = await fetch(`/api/check-national-id?nationalId=${formData.nationalId}`)
         const data = await response.json()
+        console.log("[national-id-check] Response:", data)
         setNationalIdExists(data.exists || false)
+        
+        if (data.exists) {
+          toast({
+            variant: "destructive",
+            title: "رقم وطني مستخدم",
+            description: "تم تقديم طلب سابق بهذا الرقم الوطني",
+          })
+        }
       } catch (error) {
         console.error("Error checking national ID:", error)
       } finally {
