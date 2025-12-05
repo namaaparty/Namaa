@@ -98,10 +98,9 @@ export default async function VisionPage() {
   return (
     <main dir="rtl" className="min-h-screen bg-background relative">
       <SiteNavbar />
-      <div className="h-20" />
 
       {/* Content */}
-      <div className="relative z-10 mt-20">
+      <div className="relative z-10">
         {/* Hero Section with Background Image */}
         <section className="relative w-full h-[80vh] overflow-hidden">
           <Image
