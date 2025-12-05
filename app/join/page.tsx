@@ -110,6 +110,81 @@ export default function JoinPage() {
   }, [formData.nationalId])
 
   const handleNext = () => {
+    // Validate current step before proceeding
+    if (currentStep === 1) {
+      if (!acceptedTerms) {
+        toast({
+          variant: "destructive",
+          title: "تنبيه",
+          description: "يجب الموافقة على الشروط والأحكام للمتابعة",
+        })
+        return
+      }
+    }
+
+    if (currentStep === 2) {
+      const errors: Record<string, boolean> = {}
+      
+      if (!formData.nationalId || formData.nationalId.trim() === "") errors.nationalId = true
+      if (!formData.phone || formData.phone.trim() === "") errors.phone = true
+      if (!formData.fullName || formData.fullName.trim() === "") errors.fullName = true
+      if (!formData.title) errors.title = true
+      if (!formData.birthDate) errors.birthDate = true
+      if (!formData.gender) errors.gender = true
+      if (!formData.maritalStatus) errors.maritalStatus = true
+      if (!formData.idExpiry) errors.idExpiry = true
+      if (!formData.governorate) errors.governorate = true
+      if (!formData.district) errors.district = true
+      
+      setFieldErrors(errors)
+      
+      if (Object.keys(errors).length > 0) {
+        toast({
+          variant: "destructive",
+          title: "تنبيه",
+          description: "يرجى تعبئة جميع الحقول الإلزامية في البيانات الشخصية",
+        })
+        return
+      }
+
+      if (nationalIdExists) {
+        toast({
+          variant: "destructive",
+          title: "رقم وطني مستخدم",
+          description: "تم تقديم طلب سابق بهذا الرقم الوطني",
+        })
+        return
+      }
+    }
+
+    if (currentStep === 3) {
+      const errors: Record<string, boolean> = {}
+      
+      if (!formData.qualification) errors.qualification = true
+      
+      setFieldErrors(errors)
+      
+      if (Object.keys(errors).length > 0) {
+        toast({
+          variant: "destructive",
+          title: "تنبيه",
+          description: "يرجى تعبئة المؤهل العلمي (حقل إلزامي)",
+        })
+        return
+      }
+    }
+
+    if (currentStep === 4) {
+      if (!formData.idFrontFile || !formData.idBackFile || !formData.photoFile) {
+        toast({
+          variant: "destructive",
+          title: "تنبيه",
+          description: "يرجى رفع الهوية (الوجهين) والصورة الشخصية",
+        })
+        return
+      }
+    }
+
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1)
     }
@@ -1243,19 +1318,22 @@ export default function JoinPage() {
               <CheckCircleIcon className="h-10 w-10 text-green-600" />
             </div>
             <DialogTitle className="text-center text-2xl">تم إرسال طلبك بنجاح!</DialogTitle>
-            <DialogDescription className="text-center space-y-4 pt-4">
-              <div className="bg-green-50 border-2 border-green-200 rounded-lg p-6">
-                <p className="text-sm text-green-700 mb-2">رقم طلبك</p>
-                <p className="text-3xl font-bold text-green-900">{applicationNumber}</p>
-                <p className="text-xs text-green-600 mt-2">احتفظ بهذا الرقم للمتابعة</p>
-              </div>
-              <p className="text-base text-gray-700">
-                ✉️ تم إرسال رسالة تأكيد إلى بريدك الإلكتروني<br />
-                سيتم مراجعة طلبك والرد عليك خلال 3-7 أيام
-              </p>
-              <p className="text-sm text-muted-foreground">سيتم نقلك للصفحة الرئيسية خلال لحظات...</p>
+            <DialogDescription className="text-center">
+              تم استلام طلب الانتساب الخاص بك بنجاح
             </DialogDescription>
           </DialogHeader>
+          <div className="space-y-4 pt-4">
+            <div className="bg-green-50 border-2 border-green-200 rounded-lg p-6">
+              <p className="text-sm text-green-700 mb-2">رقم طلبك</p>
+              <p className="text-3xl font-bold text-green-900">{applicationNumber}</p>
+              <p className="text-xs text-green-600 mt-2">احتفظ بهذا الرقم للمتابعة</p>
+            </div>
+            <p className="text-base text-gray-700 text-center">
+              ✉️ تم إرسال رسالة تأكيد إلى بريدك الإلكتروني<br />
+              سيتم مراجعة طلبك والرد عليك خلال 3-7 أيام
+            </p>
+            <p className="text-sm text-muted-foreground text-center">سيتم نقلك للصفحة الرئيسية خلال لحظات...</p>
+          </div>
           <div className="flex justify-center mt-4">
             <Button
               onClick={() => router.push("/")}
