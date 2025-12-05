@@ -42,6 +42,7 @@ import {
 
 interface JoinApplication {
   id: string
+  application_number: string
   national_id: string
   phone: string
   title: string
@@ -350,11 +351,16 @@ export default function JoinApplicationsPage() {
                             <User className="w-5 h-5 text-primary" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-bold text-lg mb-1">{app.full_name}</h3>
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="font-bold text-lg">{app.full_name}</h3>
+                              <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded font-mono">
+                                {app.application_number}
+                              </span>
+                            </div>
                             <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-muted-foreground">
                               <p>الرقم الوطني: {app.national_id}</p>
                               <p>الهاتف: {app.phone}</p>
-                              <p>المحافظة: {app.governorate}</p>
+                              <p>المحافظة: {GOVERNORATE_AR[app.governorate] || app.governorate}</p>
                               <p>
                                 تاريخ التقديم: {new Date(app.submitted_at).toLocaleDateString("en-GB")}
                               </p>
@@ -376,7 +382,7 @@ export default function JoinApplicationsPage() {
 
       {/* Application Details Dialog */}
       <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
-        <DialogContent className="max-w-7xl w-[90vw] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="!max-w-none sm:!max-w-7xl max-h-[90vh] overflow-y-auto" style={{ width: '90vw', maxWidth: '1400px' }}>
           <DialogHeader>
             <DialogTitle className="text-2xl">تفاصيل طلب الانتساب</DialogTitle>
             <DialogDescription>

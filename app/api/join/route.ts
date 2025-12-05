@@ -116,23 +116,40 @@ export async function POST(request: NextRequest) {
       throw new Error(`فشل حفظ الطلب: ${insertError.message || insertError.code || "unknown"}`)
     }
 
-    // Send confirmation email to applicant
-    if (insertedApplication?.email) {
-      try {
-        const { sendEmail, getApplicationSubmittedEmail } = await import("@/lib/email")
-        await sendEmail({
-          to: insertedApplication.email,
-          subject: `تم استلام طلبك - رقم ${insertedApplication.application_number}`,
-          html: getApplicationSubmittedEmail(
-            insertedApplication.full_name,
-            insertedApplication.application_number,
-          ),
-        })
-        console.log("[join] Confirmation email sent to:", insertedApplication.email)
-      } catch (emailError) {
-        console.error("[join] Error sending confirmation email:", emailError)
-        // Don't fail the request if email fails
-      }
+    // Send notification email to admin
+    try {
+      const { sendEmail } = await import("@/lib/email")
+      const adminEmail = "info@namaaparty.com"
+      
+      const adminNotificationHtml = `
+        <!DOCTYPE html>
+        <html dir="rtl" lang="ar">
+        <head><meta charset="UTF-8"><style>body{font-family:Arial;padding:20px;background:#f5f5f5;} .card{max-width:600px;margin:0 auto;background:white;border-radius:12px;padding:30px;box-shadow:0 4px 12px rgba(0,0,0,0.1);} h1{color:#10b981;margin:0 0 20px 0;} .info{background:#f0fdf4;padding:15px;border-radius:8px;margin:15px 0;} .info strong{color:#059669;}</style></head>
+        <body>
+          <div class="card">
+            <h1>📝 طلب انتساب جديد</h1>
+            <p>تم استلام طلب انتساب جديد يتطلب المراجعة:</p>
+            <div class="info">
+              <strong>رقم الطلب:</strong> ${insertedApplication.application_number}<br/>
+              <strong>الاسم:</strong> ${insertedApplication.full_name}<br/>
+              <strong>تاريخ التقديم:</strong> ${new Date().toLocaleDateString("en-GB")}
+            </div>
+            <p>يرجى مراجعة الطلب في لوحة الإدارة.</p>
+            <a href="https://namaaparty.com/admin/join-applications" style="display:inline-block;background:#10b981;color:white;padding:12px 24px;text-decoration:none;border-radius:6px;margin-top:15px;">مراجعة الطلب</a>
+          </div>
+        </body>
+        </html>
+      `
+      
+      await sendEmail({
+        to: adminEmail,
+        subject: `طلب انتساب جديد - ${insertedApplication.full_name} (${insertedApplication.application_number})`,
+        html: adminNotificationHtml,
+      })
+      console.log("[join] Admin notification sent to:", adminEmail)
+    } catch (emailError) {
+      console.error("[join] Error sending admin notification:", emailError)
+      // Don't fail the request if email fails
     }
 
     return NextResponse.json({
