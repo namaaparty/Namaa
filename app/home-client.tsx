@@ -85,11 +85,11 @@ export default function HomeClient({ heroImage, heroVideo, homeContent, statisti
 
     setShowSplash(true)
 
-    // Auto-hide after 1.5s to prevent getting stuck
+    // Auto-hide after 1.2s for faster loading
     const timer = window.setTimeout(() => {
       setShowSplash(false)
       window.sessionStorage.setItem(SPLASH_SEEN_KEY, "true")
-    }, 1500)
+    }, 1200)
 
     return () => clearTimeout(timer)
   }, [])
