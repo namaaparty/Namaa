@@ -178,12 +178,20 @@ export default async function ConstitutionPage() {
                 <Link href="#constitution-content">قراءة المزيد</Link>
               </Button>
               {pdfUrl ? (
-                <Button asChild className="gap-2">
-                  <a href={pdfUrl} target="_blank" rel="noopener noreferrer">
-                    <FileDown className="w-4 h-4" />
-                    تحميل PDF
-                  </a>
-                </Button>
+                <>
+                  <Button asChild className="gap-2">
+                    <a href={pdfUrl} target="_blank" rel="noopener noreferrer">
+                      <FileDown className="w-4 h-4" />
+                      تحميل PDF
+                    </a>
+                  </Button>
+                  <Button variant="outline" asChild className="gap-2">
+                    <a href={pdfUrl} target="_blank" rel="noopener noreferrer">
+                      <FileDown className="w-4 h-4" />
+                      عرض الملف الحالي
+                    </a>
+                  </Button>
+                </>
               ) : (
                 <Button variant="secondary" disabled className="gap-2 opacity-70">
                   <FileDown className="w-4 h-4" />
