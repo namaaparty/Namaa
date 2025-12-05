@@ -23,6 +23,8 @@ export function NewsCard({ article }: { article: NewsArticle }) {
           fill 
           className="object-cover group-hover:scale-105 transition-transform duration-500"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          loading="lazy"
+          quality={85}
         />
       </div>
       <div className="p-4">
