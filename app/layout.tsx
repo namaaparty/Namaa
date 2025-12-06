@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   description: "حزب سياسي وطني أردني ذو رؤية اقتصادية عميقة",
   generator: 'v0.app',
   icons: {
-    icon: '/logo-namaa.png',
+    icon: '/favicon.jpg',
     apple: '/logo-namaa.png',
   },
 }
