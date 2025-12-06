@@ -1462,7 +1462,7 @@ export default function AdminPagesPage() {
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-8">
               <h1 className="text-4xl font-bold">{getPageDisplayName(selectedPage)}</h1>
               <div className="flex flex-wrap items-center gap-3 justify-end">
-                {viewMode === "sections" && selectedPage.id !== "leadership" && selectedPage.id !== "home" && selectedPage.id !== "vision" && selectedPage.id !== "localDevelopment" && selectedPage.id !== "branches" && (
+                {viewMode === "sections" && selectedPage.id !== "leadership" && selectedPage.id !== "home" && selectedPage.id !== "vision" && selectedPage.id !== "localDevelopment" && selectedPage.id !== "branches" && selectedPage.id !== "constitution" && (
                   <Button onClick={openAddSectionForm} size="sm" className="gap-2">
                     <Plus size={16} />
                     إضافة قسم جديد
@@ -2128,7 +2128,7 @@ export default function AdminPagesPage() {
               </>
             )}
 
-            {selectedPage.id !== "localDevelopment" && selectedPage.id !== "branches" && (
+            {selectedPage.id !== "localDevelopment" && selectedPage.id !== "branches" && selectedPage.id !== "constitution" && (
               <Card className="p-6 mb-6">
                 <h2 className="text-xl font-bold mb-4">صورة الخلفية العلوية</h2>
                 <div className="space-y-4">

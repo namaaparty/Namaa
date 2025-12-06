@@ -2,6 +2,7 @@ import Link from "next/link"
 import { createClient as createServiceClient } from "@supabase/supabase-js"
 
 import { SiteNavbar } from "@/components/site-navbar"
+import { SiteFooter } from "@/components/site-footer"
 import { Button } from "@/components/ui/button"
 import { FileDown } from "lucide-react"
 import { createClient as createServerSupabase } from "@/lib/supabase/server"
@@ -206,12 +207,9 @@ export default async function ConstitutionPage() {
           </div>
         </section>
 
-        <div className="text-center">
-          <Link href="/" className="text-primary hover:underline">
-            العودة إلى الصفحة الرئيسية
-          </Link>
-        </div>
       </div>
+
+      <SiteFooter />
     </main>
   )
 }
