@@ -12,6 +12,7 @@ import { useToast } from "@/components/ui/use-toast"
 import { useAdminAccess } from "@/hooks/use-admin-access"
 import { ConfirmDialog } from "@/components/confirm-dialog"
 import { createClient } from "@/lib/supabase/client"
+import { Skeleton } from "@/components/ui/skeleton"
 
 import type React from "react"
 import {
@@ -75,6 +76,7 @@ export default function AdminPagesPage() {
   const { loading: authLoading, authorized, signOut } = useAdminAccess(["admin"])
 
   const [pageContents, setPageContents] = useState<PageContent[]>([])
+  const [pagesLoading, setPagesLoading] = useState(true)
   const [selectedPage, setSelectedPage] = useState<PageContent | null>(null)
   const [editingSection, setEditingSection] = useState<PageSection | null>(null)
   const [editingLeader, setEditingLeader] = useState<Leader | null>(null)
@@ -260,6 +262,7 @@ export default function AdminPagesPage() {
   }
 
   const loadPages = async () => {
+    setPagesLoading(true)
     try {
       console.log("[v0] Loading all pages from Supabase")
       const allPages = await getAllPages()
@@ -286,7 +289,7 @@ export default function AdminPagesPage() {
       })
 
       const filteredPages = sortedPages.filter(
-        (page) => page.id !== "activities" && page.id !== "goals" && page.id !== "constitution" && page.id !== "news" && page.id !== "statements",
+        (page) => page.id !== "activities" && page.id !== "goals" && page.id !== "news" && page.id !== "statements",
       )
 
       setPageContents(filteredPages)
@@ -305,6 +308,8 @@ export default function AdminPagesPage() {
         variant: "destructive",
       })
       return []
+    } finally {
+      setPagesLoading(false)
     }
   }
 
@@ -1210,36 +1215,52 @@ export default function AdminPagesPage() {
               </Link>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              {pageContents.map((page) => (
-                <Card
-                  key={page.id}
-                  className="p-6 cursor-pointer hover:shadow-lg transition-shadow"
-                  onClick={() => handleSelectPage(page)}
-                >
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">{page.title}</h3>
-                  <p className="text-gray-600 mb-3">
-                    {page.id === "leadership" && page.leaders
-                      ? `${page.leaders?.length || 0} قيادي`
-                      : `${page.sections?.length || 0} قسم`}
-                  </p>
-                  <div className="text-sm text-gray-500">
-                    آخر تعديل:{" "}
-                    {page.lastModified
-                      ? new Date(page.lastModified).toLocaleDateString("en-GB", {
-                          day: "2-digit",
-                          month: "2-digit",
-                          year: "numeric",
-                        })
-                      : "غير متوفر"}
-                  </div>
-                  {page.id === "home" && (
-                    <div className="mt-3 px-3 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full inline-block">
-                      الصفحة الرئيسية
+              {pagesLoading ? (
+                // Loading skeleton
+                <>
+                  {[1, 2, 3, 4, 5, 6].map((i) => (
+                    <Card key={i} className="p-6">
+                      <Skeleton className="h-6 w-3/4 mb-2" />
+                      <Skeleton className="h-4 w-1/2 mb-3" />
+                      <Skeleton className="h-4 w-full" />
+                    </Card>
+                  ))}
+                </>
+              ) : pageContents.length === 0 ? (
+                <div className="col-span-full text-center py-12">
+                  <p className="text-gray-600">لا توجد صفحات متاحة</p>
+                </div>
+              ) : (
+                pageContents.map((page) => (
+                  <Card
+                    key={page.id}
+                    className="p-6 cursor-pointer hover:shadow-lg transition-shadow"
+                    onClick={() => handleSelectPage(page)}
+                  >
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">{page.title}</h3>
+                    <p className="text-gray-600 mb-3">
+                      {page.id === "leadership" && page.leaders
+                        ? `${page.leaders?.length || 0} قيادي`
+                        : `${page.sections?.length || 0} قسم`}
+                    </p>
+                    <div className="text-sm text-gray-500">
+                      آخر تعديل:{" "}
+                      {page.lastModified
+                        ? new Date(page.lastModified).toLocaleDateString("en-GB", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                          })
+                        : "غير متوفر"}
                     </div>
-                  )}
-                </Card>
-              ))}
-
+                    {page.id === "home" && (
+                      <div className="mt-3 px-3 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full inline-block">
+                        الصفحة الرئيسية
+                      </div>
+                    )}
+                  </Card>
+                ))
+              )}
             </div>
           </>
         ) : editingSection ? (

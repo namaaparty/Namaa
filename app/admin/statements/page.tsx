@@ -14,6 +14,7 @@ import { supabase } from "@/lib/supabase"
 import { useRouter } from "next/navigation"
 import { useAdminAccess } from "@/hooks/use-admin-access"
 import { useToast } from "@/components/ui/use-toast"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export default function StatementsAdminPage() {
   const router = useRouter()
@@ -21,6 +22,7 @@ export default function StatementsAdminPage() {
   const { toast } = useToast()
 
   const [statements, setStatements] = useState<Statement[]>([])
+  const [statementsLoading, setStatementsLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [showHeroSection, setShowHeroSection] = useState(false)
@@ -40,8 +42,12 @@ export default function StatementsAdminPage() {
   const [imagePreview, setImagePreview] = useState<string>("")
 
   const loadStatements = async () => {
+    setStatementsLoading(true)
     try {
-      const response = await fetch("/api/admin/statements")
+      const response = await fetch("/api/admin/statements", {
+        // Add cache settings for faster loads
+        next: { revalidate: 10 }
+      })
       if (!response.ok) {
         throw new Error("فشل تحميل البيانات")
       }
@@ -54,6 +60,8 @@ export default function StatementsAdminPage() {
         title: "خطأ",
         description: "تعذر تحميل البيانات الصادرة",
       })
+    } finally {
+      setStatementsLoading(false)
     }
   }
 
@@ -295,8 +303,11 @@ export default function StatementsAdminPage() {
 
   useEffect(() => {
     if (authorized) {
-      loadStatements()
-      loadHeroImage()
+      // Load data in parallel for faster performance
+      Promise.all([
+        loadStatements(),
+        loadHeroImage()
+      ])
     }
   }, [authorized])
 
@@ -587,7 +598,26 @@ export default function StatementsAdminPage() {
 
             {/* Statements List */}
             <div className="space-y-4">
-              {statements.length === 0 ? (
+              {statementsLoading ? (
+                // Loading skeleton
+                <>
+                  {[1, 2, 3].map((i) => (
+                    <Card key={i} className="p-6">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1 space-y-3">
+                          <Skeleton className="h-6 w-3/4" />
+                          <Skeleton className="h-4 w-full" />
+                          <Skeleton className="h-4 w-1/2" />
+                        </div>
+                        <div className="flex gap-2 ml-4">
+                          <Skeleton className="h-9 w-20" />
+                          <Skeleton className="h-9 w-20" />
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </>
+              ) : statements.length === 0 ? (
                 <Card className="p-8 text-center">
                   <CardContent>
                     <p className="text-gray-600 mb-4">لا توجد بيانات حالياً</p>

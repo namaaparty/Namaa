@@ -5,8 +5,9 @@ import { SiteNavbar } from "@/components/site-navbar"
 import { Button } from "@/components/ui/button"
 import { FileDown } from "lucide-react"
 import { createClient as createServerSupabase } from "@/lib/supabase/server"
+import { getPageContent } from "@/lib/pages-storage"
 
-export const revalidate = 0
+export const revalidate = 60 // Cache for 60 seconds
 
 async function getLatestPdfUrl() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -159,6 +160,10 @@ const content = `
 
 export default async function ConstitutionPage() {
   const pdfUrl = await getLatestPdfUrl()
+  
+  // Fetch editable content from database
+  const pageData = await getPageContent("constitution")
+  const constitutionContent = pageData?.sections?.find(s => s.title === "محتوى النظام الأساسي")?.content || content
 
   return (
     <main dir="rtl" className="min-h-screen bg-gradient-to-b from-background to-muted/10">
@@ -197,7 +202,7 @@ export default async function ConstitutionPage() {
             id="constitution-content"
             className="bg-card border rounded-3xl shadow-sm p-8 leading-loose text-lg whitespace-pre-line text-muted-foreground"
           >
-            {content}
+            {constitutionContent}
           </div>
         </section>
 
