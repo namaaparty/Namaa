@@ -1,4 +1,4 @@
-# Supabase Integration Guide.
+# Supabase Integration Guide
 
 ## Setup Complete! ✅
 
