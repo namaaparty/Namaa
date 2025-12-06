@@ -180,6 +180,9 @@ export default function AdminPagesPage() {
   const [isSaving, setIsSaving] = useState(false) // Added state for saving
 
   const [viewMode, setViewMode] = useState<"sections" | "leaders">("sections")
+  const [leaderSearch, setLeaderSearch] = useState("")
+  const [leaderPage, setLeaderPage] = useState(1)
+  const leadersPerPage = 6
   const [deleteContext, setDeleteContext] = useState<DeleteContext | null>(null)
   const [deleteLoading, setDeleteLoading] = useState(false)
 
@@ -682,12 +685,12 @@ export default function AdminPagesPage() {
       await updateSection(selectedPage.id, section.id, { order: prevSection.order })
       await updateSection(selectedPage.id, prevSection.id, { order: section.order })
       
-      await loadPages()
+        await loadPages()
       const updated = (await getAllPages()).find(p => p.id === selectedPage.id)
       if (updated) setSelectedPage(updated)
       
       toast({ title: "تم تحريك الفرع للأعلى" })
-    } catch (error) {
+      } catch (error) {
       console.error("Error moving section:", error)
       toast({ variant: "destructive", title: "فشل تحريك الفرع" })
     }
@@ -1283,14 +1286,14 @@ export default function AdminPagesPage() {
                   </div>
                 </>
               ) : (
-                <div>
-                  <Label className="block text-sm font-medium text-gray-700 mb-2">المحتوى</Label>
-                  <Textarea
-                    value={formData.content}
-                    onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent h-64"
-                  />
-                </div>
+              <div>
+                <Label className="block text-sm font-medium text-gray-700 mb-2">المحتوى</Label>
+                <Textarea
+                  value={formData.content}
+                  onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent h-64"
+                />
+              </div>
               )}
 
               <div>
@@ -1499,9 +1502,9 @@ export default function AdminPagesPage() {
                   {heroVideoFile && (
                     <Button onClick={handleSaveHeroVideo} className="gap-2" disabled={isSaving}>
                       {isSaving ? "جاري الرفع..." : "حفظ الفيديو"}
-                    </Button>
+              </Button>
                   )}
-                </div>
+            </div>
               </Card>
             )}
 
@@ -1835,36 +1838,36 @@ export default function AdminPagesPage() {
 
             {selectedPage.id === "localDevelopment" && (
               <>
-                <Card className="p-6 mb-6">
-                  <h2 className="text-xl font-bold mb-4">صورة الخلفية العلوية</h2>
-                  <div className="space-y-4">
-                    <div>
-                      <Label className="block text-sm font-medium text-gray-700 mb-2">
-                        تغيير صورة الخلفية (الموصى به: 1920×1080 بكسل)
-                      </Label>
-                      <Input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleHeroImageChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                      />
-                    </div>
-                    {heroImageData && (
-                      <div className="relative w-full h-64 border rounded-lg overflow-hidden">
-                        <img
-                          src={heroImageData || "/placeholder.svg"}
-                          alt="صورة الخلفية"
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    )}
-                    {heroImageData && (
-                      <Button onClick={handleSaveHeroImage} className="gap-2" disabled={isSaving}>
-                        {isSaving ? "جاري الحفظ..." : "حفظ صورة الخلفية"}
-                      </Button>
-                    )}
+            <Card className="p-6 mb-6">
+              <h2 className="text-xl font-bold mb-4">صورة الخلفية العلوية</h2>
+              <div className="space-y-4">
+                <div>
+                  <Label className="block text-sm font-medium text-gray-700 mb-2">
+                    تغيير صورة الخلفية (الموصى به: 1920×1080 بكسل)
+                  </Label>
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleHeroImageChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  />
+                </div>
+                {heroImageData && (
+                  <div className="relative w-full h-64 border rounded-lg overflow-hidden">
+                    <img
+                      src={heroImageData || "/placeholder.svg"}
+                      alt="صورة الخلفية"
+                      className="w-full h-full object-cover"
+                    />
                   </div>
-                </Card>
+                )}
+                {heroImageData && (
+                  <Button onClick={handleSaveHeroImage} className="gap-2" disabled={isSaving}>
+                    {isSaving ? "جاري الحفظ..." : "حفظ صورة الخلفية"}
+                  </Button>
+                )}
+              </div>
+            </Card>
 
                 {!showEconomicProgramForm ? (
                   <div className="mb-6">
@@ -1991,7 +1994,7 @@ export default function AdminPagesPage() {
               <>
                 <Card className="p-6 mb-6">
                   <h2 className="text-xl font-bold mb-4">صورة الخلفية العلوية</h2>
-                  <div className="space-y-4">
+              <div className="space-y-4">
                     <div>
                       <Label className="block text-sm font-medium text-gray-700 mb-2">
                         تغيير صورة الخلفية (الموصى به: 1920×1080 بكسل)
@@ -2135,9 +2138,55 @@ export default function AdminPagesPage() {
             )}
 
             {viewMode === "leaders" && selectedPage.id === "leadership" && selectedPage.leaders ? (
-              <div className="space-y-4">
-                <h2 className="text-2xl font-bold mb-4">إدارة القيادات التنفيذية</h2>
-                {selectedPage.leaders.map((leader) => (
+              <div className="space-y-6">
+                <Card className="p-4 bg-primary/5 border-primary/20">
+                  <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                    <h2 className="text-2xl font-bold">إدارة القيادات التنفيذية</h2>
+                    <div className="flex items-center gap-2 w-full md:w-auto">
+                      <Input
+                        type="text"
+                        placeholder="🔍 البحث بالاسم أو المنصب..."
+                        value={leaderSearch}
+                        onChange={(e) => {
+                          setLeaderSearch(e.target.value)
+                          setLeaderPage(1)
+                        }}
+                        className="md:min-w-[300px] bg-white"
+                      />
+                      {leaderSearch && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => {
+                            setLeaderSearch("")
+                            setLeaderPage(1)
+                          }}
+                        >
+                          <X size={16} />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </Card>
+                {(() => {
+                  // Filter leaders by search
+                  const filteredLeaders = selectedPage.leaders.filter((leader) => {
+                    if (!leaderSearch) return true
+                    const searchLower = leaderSearch.toLowerCase()
+                    return (
+                      leader.name.toLowerCase().includes(searchLower) ||
+                      leader.position.toLowerCase().includes(searchLower)
+                    )
+                  })
+                  
+                  // Paginate
+                  const totalPages = Math.ceil(filteredLeaders.length / leadersPerPage)
+                  const startIndex = (leaderPage - 1) * leadersPerPage
+                  const paginatedLeaders = filteredLeaders.slice(startIndex, startIndex + leadersPerPage)
+                  
+                  return (
+                    <>
+                      {paginatedLeaders.map((leader) => (
                   <Card key={leader.id} className="p-6">
                     <div className="flex items-start justify-between">
                       <div className="flex items-start gap-4 flex-1">
@@ -2182,6 +2231,41 @@ export default function AdminPagesPage() {
                     </div>
                   </Card>
                 ))}
+                      
+                      {/* Pagination Controls */}
+                      {totalPages > 1 && (
+                        <Card className="p-4 bg-primary/5 border-primary/20 mt-6">
+                          <div className="flex items-center justify-center gap-4">
+                            <Button
+                              variant="outline"
+                              onClick={() => setLeaderPage((p) => Math.max(1, p - 1))}
+                              disabled={leaderPage === 1}
+                              className="min-w-[100px]"
+                            >
+                              ← السابق
+                            </Button>
+                            <div className="px-6 py-2 bg-white rounded-lg border-2 border-primary/30">
+                              <span className="font-semibold text-primary">
+                                صفحة {leaderPage} من {totalPages}
+                              </span>
+                              <span className="text-sm text-muted-foreground mr-2">
+                                ({filteredLeaders.length} قيادي)
+                              </span>
+                            </div>
+                            <Button
+                              variant="outline"
+                              onClick={() => setLeaderPage((p) => Math.min(totalPages, p + 1))}
+                              disabled={leaderPage === totalPages}
+                              className="min-w-[100px]"
+                            >
+                              التالي →
+                            </Button>
+                          </div>
+                        </Card>
+                      )}
+                    </>
+                  )
+                })()}
               </div>
             ) : (
               <div className="space-y-4">
@@ -2219,7 +2303,7 @@ export default function AdminPagesPage() {
                               )}
                             </div>
                           ) : (
-                            <p className="text-gray-600 mb-3 whitespace-pre-wrap">{section.content}</p>
+                          <p className="text-gray-600 mb-3 whitespace-pre-wrap">{section.content}</p>
                           )}
                           {section.image && (
                             <div className="mt-3">
