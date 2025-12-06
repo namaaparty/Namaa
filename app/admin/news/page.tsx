@@ -741,34 +741,34 @@ export default function AdminNewsPage() {
                 <>
                   {paginated.map((article) => (
                     <Card key={article.id} className="p-6">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">{article.title}</h3>
-                    <p className="text-gray-600 mb-3">{article.description}</p>
-                    <div className="flex items-center gap-4 text-sm text-gray-500">
-                      <span>{article.category}</span>
-                      <span>{new Date(article.date).toLocaleDateString("ar-JO")}</span>
-                      <span>{article.views} مشاهدة</span>
-                    </div>
-                  </div>
-                  <div className="flex gap-2 ml-4">
-                    <Button size="sm" variant="outline" onClick={() => handleEdit(article)} className="gap-2">
-                      <Edit2 size={16} />
-                      تعديل
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={() => setDeleteTarget(article)}
-                      className="gap-2"
-                    >
-                      <Trash2 size={16} />
-                      حذف
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-                  ))
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold text-gray-900 mb-2">{article.title}</h3>
+                          <p className="text-gray-600 mb-3">{article.description}</p>
+                          <div className="flex items-center gap-4 text-sm text-gray-500">
+                            <span>{article.category}</span>
+                            <span>{new Date(article.date).toLocaleDateString("ar-JO")}</span>
+                            <span>{article.views} مشاهدة</span>
+                          </div>
+                        </div>
+                        <div className="flex gap-2 ml-4">
+                          <Button size="sm" variant="outline" onClick={() => handleEdit(article)} className="gap-2">
+                            <Edit2 size={16} />
+                            تعديل
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => setDeleteTarget(article)}
+                            className="gap-2"
+                          >
+                            <Trash2 size={16} />
+                            حذف
+                          </Button>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
                   {totalPages > 1 && (
                     <Card className="p-4 bg-primary/5 border-primary/20 mt-6">
                       <div className="flex items-center justify-center gap-4">
