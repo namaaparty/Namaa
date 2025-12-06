@@ -2,7 +2,7 @@ import { getPartyStatistics, getPageContent } from "@/lib/pages-storage"
 import { createClient as createServerSupabase } from "@/lib/supabase/server"
 import HomeClient from "./home-client"
 
-export const revalidate = 60 // Cache for 60 seconds
+export const revalidate = 120 // Cache for 2 minutes for faster loads
 
 async function fetchData() {
   const supabase = await createServerSupabase()

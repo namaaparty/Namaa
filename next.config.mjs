@@ -21,7 +21,10 @@ const nextConfig = {
   compress: true,
   poweredByHeader: false,
   generateEtags: true,
-  swcMinify: true,
+  // Optimize for faster development
+  experimental: {
+    optimizePackageImports: ['lucide-react', '@supabase/supabase-js', '@supabase/ssr'],
+  },
 }
 
 export default nextConfig

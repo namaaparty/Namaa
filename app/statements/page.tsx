@@ -2,6 +2,8 @@ import StatementsClient from "./statements-client"
 import { createClient as createServerSupabase } from "@/lib/supabase/server"
 import { getStatements } from "@/lib/statements-storage"
 
+export const revalidate = 30 // Cache for 30 seconds
+
 export default async function StatementsPage() {
   const supabase = await createServerSupabase()
   const statements = await getStatements()

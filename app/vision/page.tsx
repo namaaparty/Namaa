@@ -6,7 +6,7 @@ import { getPageContent } from "@/lib/pages-storage"
 import { SiteNavbar } from "@/components/site-navbar"
 import { SiteFooter } from "@/components/site-footer"
 
-export const revalidate = 60 // Cache for 60 seconds
+export const revalidate = 300 // Cache for 5 minutes (content rarely changes)
 
 interface Section {
   id?: string

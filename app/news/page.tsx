@@ -2,7 +2,7 @@ import { getNews } from "@/lib/news-storage"
 import { createClient as createServerSupabase } from "@/lib/supabase/server"
 import NewsClient from "./news-client"
 
-export const revalidate = 0
+export const revalidate = 30 // Cache for 30 seconds for faster loads
 
 export default async function NewsPage() {
   const supabase = await createServerSupabase()

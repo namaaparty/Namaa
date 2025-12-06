@@ -1,7 +1,7 @@
 import { createClient as createServerSupabase } from "@/lib/supabase/server"
 import ActivitiesClient from "./activities-client"
 
-export const revalidate = 0
+export const revalidate = 30 // Cache for 30 seconds for faster loads
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createServerSupabase>>
 

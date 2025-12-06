@@ -30,23 +30,25 @@ export function SiteNavbar({ className }: SiteNavbarProps) {
 
   return (
     <>
-      <header className={cn("fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b", className)}>
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
-            <Link href="/" className="flex-shrink-0" aria-label="الصفحة الرئيسية">
-              <Image
-                src="/logo-horizontal.png"
-                alt="حزب نماء"
-                width={220}
-                height={64}
-                className="h-12 w-auto object-contain drop-shadow-lg"
-                priority
-              />
+      <header className={cn("fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b h-20", className)}>
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 h-full">
+          <div className="flex items-center justify-between h-full">
+            <Link href="/" className="flex-shrink-0 h-12" aria-label="الصفحة الرئيسية" prefetch={true}>
+              <div className="relative h-12 w-[165px]">
+                <Image
+                  src="/logo-horizontal.png"
+                  alt="حزب نماء"
+                  fill
+                  sizes="165px"
+                  className="object-contain drop-shadow-lg"
+                  priority
+                />
+              </div>
             </Link>
 
             <nav className="hidden md:flex items-center gap-2">
               {NAV_LINKS.map((link) => (
-                <Link key={link.href} href={link.href} scroll>
+                <Link key={link.href} href={link.href} prefetch={true}>
                   {link.accent ? (
                     <Button
                       size="sm"
@@ -82,13 +84,14 @@ export function SiteNavbar({ className }: SiteNavbarProps) {
       </header>
 
       {mobileMenuOpen && (
-        <div className="md:hidden border-b border-border bg-background/95 backdrop-blur-sm">
+        <div className="md:hidden border-b border-border bg-background/95 backdrop-blur-sm mt-20">
           <nav className="flex flex-col gap-2 px-6 py-4">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={handleNavigate}
+                prefetch={true}
                 className={cn(
                   "px-4 py-3 rounded-md transition-colors text-foreground cursor-pointer",
                   link.accent ? "bg-gradient-to-r from-emerald-600/90 to-teal-600/90 text-white" : "hover:bg-primary/10",

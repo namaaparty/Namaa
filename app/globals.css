@@ -171,3 +171,24 @@
     font-weight: 700;
   }
 }
+
+/* Smooth scroll behavior for better navigation experience */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Optimize scroll performance with fixed header */
+html,
+body {
+  scroll-padding-top: 5rem; /* Account for fixed navbar height (80px = 5rem) */
+}
+
+/* Ensure smooth transitions during route changes */
+* {
+  scroll-margin-top: 5rem;
+}
+
+/* Prevent layout shift on route changes */
+body {
+  overflow-x: hidden;
+}

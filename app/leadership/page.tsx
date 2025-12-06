@@ -6,6 +6,8 @@ import { createClient as createServerSupabase } from "@/lib/supabase/server"
 import { SiteNavbar } from "@/components/site-navbar"
 import { SiteFooter } from "@/components/site-footer"
 
+export const revalidate = 120 // Cache for 2 minutes (leadership data rarely changes)
+
 type SupabaseServerClient = Awaited<ReturnType<typeof createServerSupabase>>
 
 interface Leader {

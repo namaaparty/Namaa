@@ -4,6 +4,7 @@ import type { Metadata } from "next"
 import "./globals.css"
 import { Cairo, Tajawal } from "next/font/google"
 import { Toaster } from "@/components/ui/toaster"
+import { ScrollToTop } from "@/components/scroll-to-top"
 
 // Initialize fonts
 const cairo = Cairo({
@@ -38,6 +39,7 @@ export default function RootLayout({
   return (
     <html lang="ar" dir="rtl" className={`${cairo.variable} ${tajawal.variable}`}>
       <body className="antialiased">
+        <ScrollToTop />
         {children}
         <Toaster />
       </body>
