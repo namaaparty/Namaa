@@ -1097,8 +1097,8 @@ export default function AdminPagesPage() {
         <div className="text-center space-y-4">
           <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
           <p className="text-muted-foreground">جاري التحقق من الصلاحيات...</p>
-            </div>
-          </div>
+        </div>
+      </div>
     )
   }
 
@@ -1108,18 +1108,18 @@ export default function AdminPagesPage() {
         <Card className="w-full max-w-md p-8 text-center space-y-6">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mx-auto">
             <Lock className="w-8 h-8 text-primary" />
-            </div>
-            <div>
+          </div>
+          <div>
             <h1 className="text-2xl font-bold text-gray-900 mb-2">صلاحية مطلوبة</h1>
             <p className="text-gray-600">لا تمتلك الصلاحية لإدارة الصفحات. يرجى تسجيل الدخول بحساب مسؤول.</p>
-            </div>
+          </div>
           <div className="space-y-3">
             <Link href="/admin/login">
               <Button className="w-full">الانتقال إلى صفحة تسجيل الدخول</Button>
             </Link>
             <Link href="/">
               <Button variant="ghost" className="w-full">
-              العودة إلى الموقع الرئيسي
+                العودة إلى الموقع الرئيسي
               </Button>
             </Link>
           </div>
@@ -2408,8 +2408,8 @@ export default function AdminPagesPage() {
                         </div>
                       </div>
                     </Card>
-                        ))
-                        {showSearch && totalPages > 1 && (
+                  ))}
+                  {showSearch && totalPages > 1 && (
                           <Card className="p-4 bg-primary/5 border-primary/20 mt-6">
                             <div className="flex items-center justify-center gap-4">
                               <Button
