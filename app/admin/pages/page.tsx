@@ -183,6 +183,9 @@ export default function AdminPagesPage() {
   const [leaderSearch, setLeaderSearch] = useState("")
   const [leaderPage, setLeaderPage] = useState(1)
   const leadersPerPage = 6
+  const [sectionSearch, setSectionSearch] = useState("")
+  const [sectionPage, setSectionPage] = useState(1)
+  const sectionsPerPage = 6
   const [deleteContext, setDeleteContext] = useState<DeleteContext | null>(null)
   const [deleteLoading, setDeleteLoading] = useState(false)
 
@@ -2271,8 +2274,10 @@ export default function AdminPagesPage() {
               <div className="space-y-4">
                 {selectedPage.sections && selectedPage.sections.length > 0 ? (
                   (() => {
+                    const showSearch = selectedPage.id === "branches" || selectedPage.id === "localDevelopment"
+                    
                     // For home page, sort so "النص الرئيسي" appears before "عن حزب نماء"
-                    const sectionsToDisplay = selectedPage.id === "home"
+                    let sectionsToDisplay = selectedPage.id === "home"
                       ? [...selectedPage.sections].sort((a, b) => {
                           if (a.title === "النص الرئيسي") return -1
                           if (b.title === "النص الرئيسي") return 1
@@ -2280,9 +2285,56 @@ export default function AdminPagesPage() {
                           if (b.title === "عن حزب نماء") return -1
                           return 0
                         })
-                      : selectedPage.sections
+                      : [...selectedPage.sections]
                     
-                    return sectionsToDisplay.map((section) => (
+                    // Filter by search
+                    if (showSearch && sectionSearch) {
+                      const searchLower = sectionSearch.toLowerCase()
+                      sectionsToDisplay = sectionsToDisplay.filter((section) =>
+                        section.title.toLowerCase().includes(searchLower) ||
+                        section.content.toLowerCase().includes(searchLower) ||
+                        (section.phone && section.phone.includes(sectionSearch)) ||
+                        (section.address && section.address.toLowerCase().includes(searchLower))
+                      )
+                    }
+                    
+                    // Paginate
+                    const totalPages = showSearch ? Math.ceil(sectionsToDisplay.length / sectionsPerPage) : 1
+                    const paginatedSections = showSearch
+                      ? sectionsToDisplay.slice((sectionPage - 1) * sectionsPerPage, sectionPage * sectionsPerPage)
+                      : sectionsToDisplay
+                    
+                    return (
+                      <>
+                        {showSearch && (
+                          <Card className="p-4 bg-primary/5 border-primary/20 mb-4">
+                            <div className="flex items-center gap-2">
+                              <Input
+                                type="text"
+                                placeholder="🔍 البحث..."
+                                value={sectionSearch}
+                                onChange={(e) => {
+                                  setSectionSearch(e.target.value)
+                                  setSectionPage(1)
+                                }}
+                                className="bg-white"
+                              />
+                              {sectionSearch && (
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => {
+                                    setSectionSearch("")
+                                    setSectionPage(1)
+                                  }}
+                                >
+                                  <X size={16} />
+                                </Button>
+                              )}
+                            </div>
+                          </Card>
+                        )}
+                        {paginatedSections.map((section) => (
                     <Card key={section.id} className="p-6">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
@@ -2356,7 +2408,36 @@ export default function AdminPagesPage() {
                         </div>
                       </div>
                     </Card>
-                  ))
+                        ))
+                        {showSearch && totalPages > 1 && (
+                          <Card className="p-4 bg-primary/5 border-primary/20 mt-6">
+                            <div className="flex items-center justify-center gap-4">
+                              <Button
+                                variant="outline"
+                                onClick={() => setSectionPage((p) => Math.max(1, p - 1))}
+                                disabled={sectionPage === 1}
+                                className="min-w-[100px]"
+                              >
+                                ← السابق
+                              </Button>
+                              <div className="px-6 py-2 bg-white rounded-lg border-2 border-primary/30">
+                                <span className="font-semibold text-primary">
+                                  صفحة {sectionPage} من {totalPages}
+                                </span>
+                              </div>
+                              <Button
+                                variant="outline"
+                                onClick={() => setSectionPage((p) => Math.min(totalPages, p + 1))}
+                                disabled={sectionPage === totalPages}
+                                className="min-w-[100px]"
+                              >
+                                التالي →
+                              </Button>
+                            </div>
+                          </Card>
+                        )}
+                      </>
+                    )
                   })()
                 ) : (
                   <div className="text-center py-8 text-gray-500">

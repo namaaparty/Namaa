@@ -5,6 +5,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
 import { getNews, addNews, deleteNews, updateNews, exportNewsToFile, importNewsFromFile } from "@/lib/news-storage"
 import { uploadImageToStorage, updatePageContent, getPageContent, deleteImageFromStorage } from "@/lib/pages-storage"
 import type { NewsArticle } from "@/lib/types"
@@ -53,6 +54,9 @@ export default function AdminNewsPage() {
   const [currentHeroImage, setCurrentHeroImage] = useState<string | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<NewsArticle | null>(null)
   const [deleteLoading, setDeleteLoading] = useState(false)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 6
 
   useEffect(() => {
     if (authorized) {
@@ -703,6 +707,22 @@ export default function AdminNewsPage() {
         )}
 
         {/* News List */}
+        {/* Search */}
+        {Array.isArray(articles) && articles.length > 0 && (
+          <Card className="p-4 bg-primary/5 border-primary/20 mb-4">
+            <Input
+              type="text"
+              placeholder="🔍 البحث..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value)
+                setCurrentPage(1)
+              }}
+              className="bg-white"
+            />
+          </Card>
+        )}
+
         <div className="space-y-4">
           {!Array.isArray(articles) || articles.length === 0 ? (
             <Card className="p-8 text-center">
@@ -710,8 +730,17 @@ export default function AdminNewsPage() {
               <Button onClick={() => setShowForm(true)}>إضافة أول خبر</Button>
             </Card>
           ) : (
-            articles.map((article) => (
-              <Card key={article.id} className="p-6">
+            (() => {
+              const filtered = articles.filter((a) => !searchQuery || 
+                a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                a.category.toLowerCase().includes(searchQuery.toLowerCase()))
+              const totalPages = Math.ceil(filtered.length / itemsPerPage)
+              const paginated = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+              
+              return (
+                <>
+                  {paginated.map((article) => (
+                    <Card key={article.id} className="p-6">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <h3 className="text-xl font-bold text-gray-900 mb-2">{article.title}</h3>
@@ -739,7 +768,21 @@ export default function AdminNewsPage() {
                   </div>
                 </div>
               </Card>
-            ))
+                  ))
+                  {totalPages > 1 && (
+                    <Card className="p-4 bg-primary/5 border-primary/20 mt-6">
+                      <div className="flex items-center justify-center gap-4">
+                        <Button variant="outline" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="min-w-[100px]">← السابق</Button>
+                        <div className="px-6 py-2 bg-white rounded-lg border-2 border-primary/30">
+                          <span className="font-semibold text-primary">صفحة {currentPage} من {totalPages}</span>
+                        </div>
+                        <Button variant="outline" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="min-w-[100px]">التالي →</Button>
+                      </div>
+                    </Card>
+                  )}
+                </>
+              )
+            })()
           )}
         </div>
       </main>
