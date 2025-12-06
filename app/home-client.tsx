@@ -120,6 +120,7 @@ export default function HomeClient({ heroImage, heroVideo, homeContent, statisti
                 src="/images/namaa-20logo-20colored-20final.png"
                 alt="حزب نماء"
                 fill
+                sizes="600px"
                 className="object-contain drop-shadow-[0_0_50px_rgba(16,185,129,0.4)]"
                 priority
               />

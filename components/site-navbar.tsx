@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { usePathname } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
@@ -25,14 +26,25 @@ interface SiteNavbarProps {
 
 export function SiteNavbar({ className }: SiteNavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const pathname = usePathname()
 
   const handleNavigate = () => setMobileMenuOpen(false)
+  
+  const isActive = (href: string) => {
+    if (href === "/") {
+      return pathname === "/"
+    }
+    return pathname?.startsWith(href)
+  }
 
   return (
     <>
-      <header className={cn("fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b h-20", className)}>
+      <header 
+        className={cn("fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b h-20", className)}
+        style={{ willChange: 'auto', contain: 'layout' }}
+      >
         <div className="max-w-7xl mx-auto px-6 lg:px-8 h-full">
-          <div className="flex items-center justify-between h-full">
+          <div className="flex items-center justify-between h-full min-h-20">
             <Link href="/" className="flex-shrink-0 h-12" aria-label="الصفحة الرئيسية" prefetch={true}>
               <div className="relative h-12 w-[165px]">
                 <Image
@@ -46,7 +58,7 @@ export function SiteNavbar({ className }: SiteNavbarProps) {
               </div>
             </Link>
 
-            <nav className="hidden md:flex items-center gap-2">
+            <nav className="hidden md:flex items-center gap-2 flex-shrink-0">
               {NAV_LINKS.map((link) => (
                 <Link key={link.href} href={link.href} prefetch={true}>
                   {link.accent ? (
@@ -57,7 +69,13 @@ export function SiteNavbar({ className }: SiteNavbarProps) {
                       {link.label}
                     </Button>
                   ) : (
-                    <Button variant="ghost" size="sm">
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      className={cn(
+                        isActive(link.href) && "bg-primary/10 text-primary font-semibold"
+                      )}
+                    >
                       {link.label}
                     </Button>
                   )}
@@ -93,8 +111,12 @@ export function SiteNavbar({ className }: SiteNavbarProps) {
                 onClick={handleNavigate}
                 prefetch={true}
                 className={cn(
-                  "px-4 py-3 rounded-md transition-colors text-foreground cursor-pointer",
-                  link.accent ? "bg-gradient-to-r from-emerald-600/90 to-teal-600/90 text-white" : "hover:bg-primary/10",
+                  "px-4 py-3 rounded-md transition-colors cursor-pointer",
+                  link.accent 
+                    ? "bg-gradient-to-r from-emerald-600/90 to-teal-600/90 text-white" 
+                    : isActive(link.href)
+                    ? "bg-primary/15 text-primary font-semibold"
+                    : "text-foreground hover:bg-primary/10"
                 )}
               >
                 {link.label}

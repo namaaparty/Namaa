@@ -344,11 +344,11 @@ export default function JoinPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/10 relative">
+    <div className="min-h-screen bg-gradient-to-br from-white via-emerald-50/30 to-teal-50/40 relative">
       {/* Background Image */}
       <div className="fixed inset-0 z-0">
-        <div className="absolute inset-0 bg-[url('/images/leadership.jpg')] bg-cover bg-center opacity-10" />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/95 via-background/90 to-background/95" />
+        <div className="absolute inset-0 bg-[url('/images/leadership.jpg')] bg-cover bg-center opacity-5" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/98 via-white/95 to-emerald-50/90" />
       </div>
 
       {/* Content */}
@@ -368,9 +368,9 @@ export default function JoinPage() {
             <div className="mb-12">
               <div className="flex items-center justify-between relative">
                 {/* Progress Line */}
-                <div className="absolute top-5 right-0 left-0 h-1 bg-muted -z-10">
+                <div className="absolute top-5 right-0 left-0 h-1 bg-gray-200 -z-10">
                   <div
-                    className="h-full bg-primary transition-all duration-500"
+                    className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-500"
                     style={{ width: `${((currentStep - 1) / (totalSteps - 1)) * 100}%` }}
                   />
                 </div>
@@ -386,15 +386,15 @@ export default function JoinPage() {
                     <div
                       className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${
                         currentStep >= step.number
-                          ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30"
-                          : "bg-background text-muted-foreground border-2 border-muted"
+                          ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/30"
+                          : "bg-white text-gray-400 border-2 border-gray-300"
                       }`}
                     >
                       {currentStep > step.number ? <CheckCircle2 className="w-5 h-5" /> : step.number}
                     </div>
                     <span
                       className={`text-xs font-medium text-center max-w-[100px] ${
-                        currentStep >= step.number ? "text-primary" : "text-muted-foreground"
+                        currentStep >= step.number ? "text-emerald-700 font-semibold" : "text-gray-500"
                       }`}
                     >
                       {step.title}
@@ -406,8 +406,8 @@ export default function JoinPage() {
 
             {/* Form Card */}
             <Card className="shadow-xl border-0">
-              <CardHeader className="bg-gradient-to-r from-primary to-secondary text-primary-foreground rounded-t-lg">
-                <CardTitle className="text-2xl text-center">
+              <CardHeader className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-t-lg">
+                <CardTitle className="text-2xl text-center font-bold">
                   {currentStep === 1 && "الشروط والأحكام"}
                   {currentStep === 2 && "البيانات الشخصية"}
                   {currentStep === 3 && "التعليم والوظيفة"}
@@ -419,19 +419,19 @@ export default function JoinPage() {
                   {/* Step 1: Terms and Conditions */}
                   {currentStep === 1 && (
                     <div className="space-y-6">
-                      <div className="bg-primary/5 border border-primary/20 rounded-lg p-6">
-                        <h3 className="text-lg font-bold text-primary mb-4">
+                      <div className="bg-emerald-50/50 border border-emerald-200 rounded-lg p-6">
+                        <h3 className="text-lg font-bold text-emerald-700 mb-4">
                           قبل البدء بتقديم طلب الانتساب لعضوية حزب نماء، يرجى مراعاة الشروط التالية:
                         </h3>
-                        <ul className="space-y-4 text-slate-700">
+                        <ul className="space-y-4 text-gray-700">
                           <li className="flex items-start gap-3">
-                            <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                            <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
                             <span>
                               قراءة{" "}
                               <Link
-                                href="/principles"
+                                href="/constitution"
                                 target="_blank"
-                                className="text-primary hover:text-primary/80 underline font-bold"
+                                className="text-emerald-600 hover:text-emerald-700 underline font-semibold"
                               >
                                 مبادئ حزب نماء والنظام الأساسي
                               </Link>{" "}
@@ -439,28 +439,28 @@ export default function JoinPage() {
                             </span>
                           </li>
                           <li className="flex items-start gap-3">
-                            <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                            <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
                             <span>أن يكون عمر المتقدم 18 سنة أو أكثر</span>
                           </li>
                           <li className="flex items-start gap-3">
-                            <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                            <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
                             <span>أن يكون المتقدم أردني الجنسية</span>
                           </li>
                           <li className="flex items-start gap-3">
-                            <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                            <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
                             <span>
                               في حال كان المتقدم عضواً في حزب أردني آخر، يجب الاستقالة من الحزب السابق وإرفاق صورة عن
                               الاستقالة
                             </span>
                           </li>
                           <li className="flex items-start gap-3">
-                            <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                            <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
                             <span>
                               في حال وجود قضايا منظورة لدى المحاكم الأردنية، يجب إحضار شهادة عدم محكومية وإرفاقها
                             </span>
                           </li>
                           <li className="flex items-start gap-3">
-                            <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                            <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
                             <span>أن تكون الهوية الشخصية سارية المفعول وواضحة لإرفاقها على الوجهين</span>
                           </li>
                         </ul>
@@ -965,23 +965,23 @@ export default function JoinPage() {
                         <h3 className="text-lg font-bold text-primary mb-3">المرفقات المطلوبة:</h3>
                         <ul className="space-y-2 text-foreground">
                           <li className="flex items-start gap-2">
-                            <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                            <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
                             <span>صورة الهوية الشخصية (الوجه الأمامي)</span>
                           </li>
                           <li className="flex items-start gap-2">
-                            <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                            <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
                             <span>صورة الهوية الشخصية (الوجه الخلفي)</span>
                           </li>
                           <li className="flex items-start gap-2">
-                            <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                            <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
                             <span>صورة شخصية حديثة</span>
                           </li>
                           <li className="flex items-start gap-2">
-                            <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                            <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
                             <span>صورة عن الاستقالة من الحزب السابق (إن وجد)</span>
                           </li>
                           <li className="flex items-start gap-2">
-                            <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                            <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
                             <span>شهادة عدم محكومية (في حال وجود قضايا منظورة)</span>
                           </li>
                         </ul>
@@ -1014,7 +1014,7 @@ export default function JoinPage() {
                           <div className="border-2 border-primary rounded-lg p-4 bg-primary/5">
                             <div className="flex items-center justify-between mb-2">
                               <div className="flex items-center gap-2">
-                                <CheckCircleIcon className="w-5 h-5 text-primary" />
+                                <CheckCircleIcon className="w-5 h-5 text-emerald-600" />
                                 <span className="text-sm font-medium">{formData.idFrontFile.name}</span>
                               </div>
                               <Button
@@ -1067,7 +1067,7 @@ export default function JoinPage() {
                           <div className="border-2 border-primary rounded-lg p-4 bg-primary/5">
                             <div className="flex items-center justify-between mb-2">
                               <div className="flex items-center gap-2">
-                                <CheckCircleIcon className="w-5 h-5 text-primary" />
+                                <CheckCircleIcon className="w-5 h-5 text-emerald-600" />
                                 <span className="text-sm font-medium">{formData.idBackFile.name}</span>
                               </div>
                               <Button
@@ -1120,7 +1120,7 @@ export default function JoinPage() {
                           <div className="border-2 border-primary rounded-lg p-4 bg-primary/5">
                             <div className="flex items-center justify-between mb-2">
                               <div className="flex items-center gap-2">
-                                <CheckCircleIcon className="w-5 h-5 text-primary" />
+                                <CheckCircleIcon className="w-5 h-5 text-emerald-600" />
                                 <span className="text-sm font-medium">{formData.photoFile.name}</span>
                               </div>
                               <Button
@@ -1168,7 +1168,7 @@ export default function JoinPage() {
                           <div className="border-2 border-primary rounded-lg p-4 bg-primary/5">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
-                                <CheckCircleIcon className="w-5 h-5 text-primary" />
+                                <CheckCircleIcon className="w-5 h-5 text-emerald-600" />
                                 <span className="text-sm font-medium">{formData.resignationFile.name}</span>
                               </div>
                               <Button
@@ -1208,7 +1208,7 @@ export default function JoinPage() {
                           <div className="border-2 border-primary rounded-lg p-4 bg-primary/5">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
-                                <CheckCircleIcon className="w-5 h-5 text-primary" />
+                                <CheckCircleIcon className="w-5 h-5 text-emerald-600" />
                                 <span className="text-sm font-medium">{formData.clearanceFile.name}</span>
                               </div>
                               <Button
@@ -1244,7 +1244,7 @@ export default function JoinPage() {
                         type="button"
                         onClick={handleNext}
                         disabled={currentStep === 1 && !acceptedTerms}
-                        className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground"
+                        className="gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg shadow-emerald-500/30"
                       >
                         التالي
                         <ArrowRight className="w-4 h-4" />
@@ -1253,7 +1253,7 @@ export default function JoinPage() {
                       <Button
                         type="submit"
                         disabled={isSubmitting}
-                        className="gap-2 bg-secondary hover:bg-secondary/90 text-secondary-foreground"
+                        className="gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg shadow-emerald-500/30"
                       >
                         {isSubmitting ? "جاري الإرسال..." : "إرسال الطلب"}
                         {isSubmitting ? (

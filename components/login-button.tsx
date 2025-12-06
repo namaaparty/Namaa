@@ -135,7 +135,19 @@ export function LoginButton({
   }
 
   if (loading) {
-    return null
+    // Show placeholder to prevent layout shift - matches login button exactly
+    return (
+      <Button
+        variant={variant}
+        size={size}
+        disabled
+        className={cn("gap-2 pointer-events-none min-w-[120px]", fullWidth ? "w-full" : "", className)}
+        style={{ visibility: 'visible', opacity: 0.6 }}
+      >
+        <User className="w-4 h-4" />
+        <span className="whitespace-nowrap">تسجيل الدخول</span>
+      </Button>
+    )
   }
 
   if (userEmail) {

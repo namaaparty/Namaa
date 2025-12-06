@@ -7,29 +7,32 @@ import { createClient as createServerSupabase } from "@/lib/supabase/server"
 import { SiteNavbar } from "@/components/site-navbar"
 import { SiteFooter } from "@/components/site-footer"
 
-export const revalidate = 60 // Cache for 60 seconds
+export const revalidate = 300 // Cache for 5 minutes (content rarely changes)
 
 interface Section {
   id: string
   title: string
   content: string
   order_number: number
+  image?: string
 }
 
 async function fetchPageData() {
   const supabase = await createServerSupabase()
-  const sectionsData = await getAllSections("localDevelopment")
-
-  // جلب صورة Hero من page_content
-  const { data: pageData } = await supabase
-    .from("page_content")
-    .select("hero_image")
-    .eq("page_id", "localDevelopment")
-    .maybeSingle()
+  
+  // Parallel data fetching for better performance
+  const [sectionsData, pageData] = await Promise.all([
+    getAllSections("localDevelopment"),
+    supabase
+      .from("page_content")
+      .select("hero_image")
+      .eq("page_id", "localDevelopment")
+      .maybeSingle()
+  ])
 
   return {
     sections: sectionsData || [],
-    heroImage: pageData?.hero_image || "/images/meeting.jpg",
+    heroImage: pageData.data?.hero_image || "/images/meeting.jpg",
   }
 }
 
@@ -46,7 +49,14 @@ export default async function LocalDevelopmentPage() {
 
       {/* Hero Section with Background Image */}
       <section className="relative h-[80vh] overflow-hidden">
-        <Image src={heroImage || "/placeholder.svg"} alt="البرنامج الاقتصادي" fill className="object-cover" priority />
+        <Image 
+          src={heroImage || "/placeholder.svg"} 
+          alt="البرنامج الاقتصادي" 
+          fill 
+          sizes="100vw"
+          className="object-cover" 
+          priority 
+        />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60" />
 
         {/* Hero Content */}
@@ -99,7 +109,9 @@ export default async function LocalDevelopmentPage() {
                                 src={pillar.image || "/placeholder.svg"}
                                 alt={pillar.title}
                                 fill
+                                sizes="(max-width: 768px) 100vw, 200px"
                                 className="object-cover"
+                                loading="lazy"
                               />
                               <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-black/70" />
                             </>
