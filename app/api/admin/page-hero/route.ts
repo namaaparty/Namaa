@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { createClient as createServiceClient } from "@supabase/supabase-js"
+import { createClient } from "@/lib/supabase/server"
 
 const PAGE_TITLES: Record<string, string> = {
   home: "الصفحة الرئيسية",
@@ -12,20 +12,9 @@ const PAGE_TITLES: Record<string, string> = {
   "local-development": "البرنامج الاقتصادي",
 }
 
-function getServiceClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-  if (!supabaseUrl || !serviceRoleKey) {
-    throw new Error("Supabase configuration missing on server")
-  }
-
-  return createServiceClient(supabaseUrl, serviceRoleKey)
-}
-
 export async function POST(request: Request) {
   try {
-    const supabase = getServiceClient()
+    const supabase = await createClient()
     const formData = await request.formData()
     const pageId = formData.get("pageId")?.toString()
     const file = formData.get("file") as File | null
