@@ -1,20 +1,9 @@
 import { NextResponse } from "next/server"
-import { createClient as createServiceClient } from "@supabase/supabase-js"
-
-function getServiceClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-  if (!supabaseUrl || !serviceRoleKey) {
-    throw new Error("Supabase configuration missing on server")
-  }
-
-  return createServiceClient(supabaseUrl, serviceRoleKey)
-}
+import { createClient } from "@/lib/supabase/server"
 
 export async function GET() {
   try {
-    const supabase = getServiceClient()
+    const supabase = await createClient()
     const { data, error } = await supabase.from("statements").select("*").order("date", { ascending: false })
 
     if (error) {
@@ -31,7 +20,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const supabase = getServiceClient()
+    const supabase = await createClient()
     const body = await request.json()
     const { title, description, content, image } = body
 
