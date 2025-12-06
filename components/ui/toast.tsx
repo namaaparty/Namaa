@@ -26,15 +26,15 @@ const ToastViewport = React.forwardRef<
 ToastViewport.displayName = ToastPrimitives.Viewport.displayName
 
 const toastVariants = cva(
-  'group pointer-events-auto relative flex w-full flex-row-reverse items-center justify-between space-x-4 space-x-reverse overflow-hidden rounded-md border p-6 pl-8 text-right shadow-lg transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full',
+  'group pointer-events-auto relative flex w-full flex-row-reverse items-center justify-between space-x-4 space-x-reverse overflow-hidden rounded-lg border p-5 pl-8 text-right shadow-2xl backdrop-blur-md transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full',
   {
     variants: {
       variant: {
-        default: 'border bg-background text-foreground',
+        default: 'border-gray-200 bg-white/95 text-gray-900 shadow-xl',
         success:
-          'border border-emerald-200 bg-emerald-50 text-emerald-900',
+          'border-emerald-300 bg-gradient-to-br from-emerald-50 to-teal-50 text-emerald-900 shadow-emerald-200/50 shadow-2xl',
         destructive:
-          'destructive group border-destructive bg-destructive text-destructive-foreground',
+          'border-red-300 bg-gradient-to-br from-red-50 to-rose-50 text-red-900 shadow-red-200/50 shadow-2xl',
       },
     },
     defaultVariants: {

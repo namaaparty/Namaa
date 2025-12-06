@@ -41,8 +41,10 @@ export default function StatementsClient({ statements, heroImage }: StatementsCl
             src={heroImage || "/placeholder.svg"}
             alt="البيانات الصادرة عن الحزب"
             fill
+            sizes="100vw"
             className="object-cover"
             priority
+            quality={85}
           />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60" />
           <div className="absolute inset-0 flex items-center justify-center">
@@ -78,6 +80,8 @@ export default function StatementsClient({ statements, heroImage }: StatementsCl
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-500"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      loading="lazy"
+                      quality={80}
                     />
                   </div>
                   <div className="p-6 flex-1 flex flex-col">

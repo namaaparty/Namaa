@@ -104,14 +104,19 @@ export default async function VisionPage() {
 
       {/* Content */}
       <div className="relative z-10">
+        {/* Spacer for fixed navbar */}
+        <div className="h-20" />
+        
         {/* Hero Section with Background Image */}
         <section className="relative w-full h-[80vh] overflow-hidden">
           <Image
             src={heroImage || "/placeholder.svg"}
             alt="رؤيتنا ومبادئنا وأهدافنا"
             fill
+            sizes="100vw"
             className="object-cover"
             priority
+            quality={85}
           />
           <div className="absolute inset-0 bg-gradient-to-b from-primary/20 via-secondary/10 to-primary/25 border-0" />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60" />
