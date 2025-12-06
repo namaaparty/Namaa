@@ -160,7 +160,7 @@ function AdminLoginContent() {
               <Input
                 id="email"
                 type="email"
-                placeholder="Username'"
+                placeholder="Username"
                 dir="ltr"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
