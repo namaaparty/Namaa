@@ -23,7 +23,11 @@ const tajawal = Tajawal({
 export const metadata: Metadata = {
   title: "حزب نماء - حزب سياسي وطني أردني",
   description: "حزب سياسي وطني أردني ذو رؤية اقتصادية عميقة",
-    generator: 'v0.app'
+  generator: 'v0.app',
+  icons: {
+    icon: '/logo-namaa.png',
+    apple: '/logo-namaa.png',
+  },
 }
 
 export default function RootLayout({
